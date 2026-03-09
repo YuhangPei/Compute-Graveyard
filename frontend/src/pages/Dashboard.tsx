@@ -105,7 +105,7 @@ export default function Dashboard() {
       <div className="dashboard-header">
         <h1>资源看板</h1>
         <button className="btn btn-primary" onClick={() => setShowApply(true)}>
-          申请容器
+          申请 GPU 容器
         </button>
       </div>
 

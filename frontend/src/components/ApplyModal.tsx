@@ -73,6 +73,7 @@ export default function ApplyModal({ freeGpus, onClose, onSuccess }: ApplyModalP
             <button className="btn btn-ghost" onClick={handleDone}>×</button>
           </div>
           <div className="created-info">
+            <p className="created-tagline">升华还是埋没，看自己的造化。</p>
             <p><strong>请妥善保存以下信息，关闭后可在「我的容器」中查看。</strong></p>
             <div className="created-row">
               <span>SSH 端口:</span>
@@ -109,7 +110,7 @@ export default function ApplyModal({ freeGpus, onClose, onSuccess }: ApplyModalP
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>申请容器</h2>
+          <h2>申请 GPU 容器</h2>
           <button className="btn btn-ghost" onClick={onClose}>
             ×
           </button>
@@ -168,7 +169,7 @@ export default function ApplyModal({ freeGpus, onClose, onSuccess }: ApplyModalP
               className="btn btn-primary"
               disabled={loading || (!cpuOnly && freeGpus.length === 0)}
             >
-              {loading ? "申请中..." : "确认申请"}
+              {loading ? "申请中…" : "确认申请"}
             </button>
           </div>
         </form>

@@ -1,11 +1,41 @@
+import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import "./Layout.css";
 import { useAuth } from "../hooks/useAuth";
+
+const SLOGANS = [
+  "正在消耗 GPU 的寿命，换取一份无法收敛的 Loss。",
+  "这里不产生智能，只搬运热量。",
+  "祝你的过拟合愉快。",
+];
+
+const BRAND_EN = "Compute Graveyard";
+const BRAND_ZH = "算力坟场";
+
+function SidebarLogoIcon() {
+  return (
+    <span className="sidebar-logo-icon" title="Stochastic Noise · 高维幻觉生成器">
+      <svg viewBox="0 0 40 24" fill="none" className="logo-wave">
+        {/* 冷酷直线：在无数噪音中什么也没找着 */}
+        <line x1="0" y1="12" x2="40" y2="12" stroke="currentColor" strokeWidth="0.7" opacity="0.5" />
+        {/* 混乱波形 */}
+        <path d="M0,8 L5,16 L10,6 L15,18 L20,10 L25,14 L30,4 L35,12 L40,8" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M0,16 L4,10 L8,20 L14,8 L18,14 L22,6 L28,16 L34,10 L40,14" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.75" />
+      </svg>
+    </span>
+  );
+}
 
 export default function Layout() {
   const { user, logout } = useAuth();
   const loc = useLocation();
   const navigate = useNavigate();
+  const [sloganIndex, setSloganIndex] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setSloganIndex((i) => (i + 1) % SLOGANS.length), 10000);
+    return () => clearInterval(t);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -25,8 +55,11 @@ export default function Layout() {
       {/* 侧边栏 - 桌面端 */}
       <aside className="sidebar">
         <Link to="/" className="sidebar-logo">
-          <span className="sidebar-logo-icon">⚡</span>
-          Lab GPU
+          <SidebarLogoIcon />
+          <span className="sidebar-logo-text">
+            <span className="sidebar-logo-title">{BRAND_EN}</span>
+            <span className="sidebar-logo-subtitle">{BRAND_ZH}</span>
+          </span>
         </Link>
         <nav className="sidebar-nav">
           {navItems.map((item) => (
@@ -52,9 +85,15 @@ export default function Layout() {
 
       {/* 移动端顶栏 */}
       <div className="layout-mobile-header">
-        <Link to="/" className="sidebar-logo">
-          ⚡ Lab GPU
-        </Link>
+        <div className="layout-mobile-header-top">
+          <Link to="/" className="sidebar-logo">
+            {BRAND_EN} · {BRAND_ZH}
+          </Link>
+          <span className="layout-mobile-username">
+            {user?.display_name || user?.username}
+          </span>
+        </div>
+        <p className="header-slogan header-slogan-mobile">{SLOGANS[sloganIndex]}</p>
         <nav className="layout-mobile-nav">
           {navItems.map((item) => (
             <Link
@@ -66,8 +105,7 @@ export default function Layout() {
             </Link>
           ))}
         </nav>
-        <div className="layout-mobile-user">
-          <span>{user?.display_name || user?.username}</span>
+        <div className="layout-mobile-actions">
           <button onClick={handleLogout} className="btn btn-ghost" style={{ padding: "0.35rem 0.6rem", fontSize: "0.85rem" }}>
             退出
           </button>
@@ -78,6 +116,9 @@ export default function Layout() {
       <div className="main-wrap">
         <header className="header">
           <div className="header-inner">
+            <p className="header-slogan" title="Stochastic Noise">
+              {SLOGANS[sloganIndex]}
+            </p>
             <Link to="/profile" className="header-user-link" title="个人资料">
               {user?.display_name || user?.username}
             </Link>
