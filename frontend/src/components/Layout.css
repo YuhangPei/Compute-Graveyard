@@ -147,9 +147,17 @@
   gap: 0.5rem;
 }
 
-.header-user {
+.header-user,
+.header-user-link {
   font-weight: 600;
-  margin-right: 1rem;
+  margin-right: 0.5rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.header-user-link:hover {
+  color: #34d399;
+  text-decoration: none;
 }
 
 .header .btn-ghost {

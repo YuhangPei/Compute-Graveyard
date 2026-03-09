@@ -22,6 +22,14 @@ class UserRegister(BaseModel):
     contact_value: str  # 手机号或微信号
 
 
+class UserProfileUpdate(BaseModel):
+    """用户修改个人信息"""
+    display_name: Optional[str] = None
+    real_name: Optional[str] = None
+    contact_type: Optional[str] = None  # phone | wechat
+    contact_value: Optional[str] = None
+
+
 class UserResponse(UserBase):
     id: int
     role: str

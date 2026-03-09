@@ -15,6 +15,7 @@ export default function Layout() {
   const navItems = [
     { to: "/", label: "资源看板" },
     { to: "/my", label: "我的容器" },
+    { to: "/profile", label: "个人资料" },
     ...(user?.role === "admin" ? [{ to: "/admin", label: "管理" }] : []),
   ];
 
@@ -76,7 +77,9 @@ export default function Layout() {
       <div className="main-wrap">
         <header className="header">
           <div className="header-inner">
-            <span className="header-user">{user?.display_name || user?.username}</span>
+            <Link to="/profile" className="header-user-link" title="个人资料">
+              {user?.display_name || user?.username}
+            </Link>
             <button onClick={handleLogout} className="btn btn-ghost">退出</button>
           </div>
         </header>

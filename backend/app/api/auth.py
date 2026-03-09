@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.database import get_db
 from app.database_models import UserModel
-from app.models import UserResponse, Token, UserRegister
+from app.models import UserResponse, Token, UserRegister, UserProfileUpdate
 from app.auth import verify_password, create_access_token, get_current_user, get_password_hash
 
 router = APIRouter()
@@ -107,6 +107,34 @@ def register(req: UserRegister, db=Depends(get_db)):
 
 @router.get("/me", response_model=UserResponse)
 def me(user=Depends(get_current_user)):
+    return UserResponse(
+        id=user.id,
+        username=user.username,
+        display_name=user.display_name or "",
+        role=user.role,
+        real_name=getattr(user, "real_name", None) or None,
+        contact_type=getattr(user, "contact_type", None) or None,
+        contact_value=getattr(user, "contact_value", None) or None,
+        approved=bool(getattr(user, "approved", 1)),
+        created_at=user.created_at,
+    )
+
+
+@router.patch("/me", response_model=UserResponse)
+def update_me(req: UserProfileUpdate, user=Depends(get_current_user), db=Depends(get_db)):
+    """用户修改显示名、实名、联系方式"""
+    if req.display_name is not None:
+        user.display_name = (req.display_name or "").strip() or user.display_name
+    if req.real_name is not None:
+        setattr(user, "real_name", (req.real_name or "").strip())
+    if req.contact_type is not None:
+        if req.contact_type and req.contact_type not in ("phone", "wechat"):
+            raise HTTPException(status_code=400, detail="联系方式类型请选择 phone 或 wechat")
+        setattr(user, "contact_type", req.contact_type or "")
+    if req.contact_value is not None:
+        setattr(user, "contact_value", (req.contact_value or "").strip())
+    db.commit()
+    db.refresh(user)
     return UserResponse(
         id=user.id,
         username=user.username,

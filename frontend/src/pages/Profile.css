@@ -1,0 +1,93 @@
+/* ========== Profile — 个人资料 ========== */
+.profile-page {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.profile-page h1 {
+  margin: 0 0 1rem 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--text) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.profile-form {
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+}
+
+.profile-field {
+  margin-bottom: 1rem;
+}
+
+.profile-field:last-of-type {
+  margin-bottom: 1.25rem;
+}
+
+.profile-field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.profile-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  box-sizing: border-box;
+}
+
+.profile-input:focus {
+  outline: none;
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.profile-input.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.profile-input::placeholder {
+  color: var(--text-muted);
+}
+
+.profile-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.profile-message {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.profile-message.ok {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.profile-message.err {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.profile-submit {
+  width: 100%;
+  padding: 0.6rem;
+}

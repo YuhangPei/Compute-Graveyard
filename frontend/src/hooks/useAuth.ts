@@ -8,6 +8,9 @@ export interface User {
   display_name: string;
   role: string;
   created_at: string;
+  real_name?: string | null;
+  contact_type?: string | null;
+  contact_value?: string | null;
 }
 
 export function useAuth() {
