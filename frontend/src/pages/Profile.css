@@ -44,7 +44,7 @@
   font-size: 0.9rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-sm);
-  background: rgba(0, 0, 0, 0.25);
+  background-color: rgba(0, 0, 0, 0.25);
   color: var(--text);
   box-sizing: border-box;
 }

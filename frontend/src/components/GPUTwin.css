@@ -67,8 +67,15 @@
 }
 
 @keyframes twin-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .twin-title {
@@ -121,7 +128,8 @@
   gap: 1.5rem 3rem;
   position: relative;
   z-index: 2;
-  padding: 0.5rem 0;
+  padding: 0.5rem 1.5rem 0.5rem 3.5rem;
+  /* 增加左侧内边距，防止电源线被裁剪 */
 }
 
 @media (min-width: 1024px) {
@@ -277,7 +285,9 @@
 
 /* 电源线流动动画 */
 @keyframes twin-flow-right {
-  to { stroke-dashoffset: -30; }
+  to {
+    stroke-dashoffset: -30;
+  }
 }
 
 .twin-cable-flow {
@@ -334,9 +344,17 @@
   transition: opacity 0.5s;
 }
 
-.twin-card-glow.idle { background: #52525b; }
-.twin-card-glow.active { background: #10b981; }
-.twin-card-glow.critical { background: #ef4444; }
+.twin-card-glow.idle {
+  background: #52525b;
+}
+
+.twin-card-glow.active {
+  background: #10b981;
+}
+
+.twin-card-glow.critical {
+  background: #ef4444;
+}
 
 .twin-card-header {
   display: flex;
@@ -370,9 +388,17 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.twin-card-badge.idle { color: #a1a1aa; }
-.twin-card-badge.active { color: #34d399; }
-.twin-card-badge.critical { color: #f87171; }
+.twin-card-badge.idle {
+  color: #a1a1aa;
+}
+
+.twin-card-badge.active {
+  color: #34d399;
+}
+
+.twin-card-badge.critical {
+  color: #f87171;
+}
 
 .twin-card-row {
   display: flex;
@@ -437,9 +463,17 @@
   transition: width 0.5s ease;
 }
 
-.twin-bar-green { background: #10b981; }
-.twin-bar-red { background: #ef4444; }
-.twin-bar-cyan { background: #06b6d4; }
+.twin-bar-green {
+  background: #10b981;
+}
+
+.twin-bar-red {
+  background: #ef4444;
+}
+
+.twin-bar-cyan {
+  background: #06b6d4;
+}
 
 .twin-card-temp {
   display: flex;

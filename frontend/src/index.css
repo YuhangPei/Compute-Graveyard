@@ -113,6 +113,23 @@ a:hover {
   color: var(--sky);
 }
 
+/* ========== 全局下拉框修复 ========== */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.1rem;
+  padding-right: 2.8rem !important;
+  cursor: pointer;
+}
+
+/* 针对部分系统浏览器强制设置选项背景 */
+option {
+  background-color: #1f1f1f !important;
+  color: #ffffff !important;
+}
+
 /* ========== 按钮 ========== */
 .btn {
   padding: 0.6rem 1.2rem;
