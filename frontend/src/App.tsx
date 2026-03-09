@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import MyContainers from "./pages/MyContainers";
+import Workspace from "./pages/Workspace";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 
@@ -46,6 +47,7 @@ export default function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="my" element={<MyContainers />} />
+        <Route path="workspace" element={<Workspace />} />
         <Route path="profile" element={<Profile />} />
         <Route
           path="admin"

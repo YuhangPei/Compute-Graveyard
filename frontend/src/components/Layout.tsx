@@ -15,6 +15,7 @@ export default function Layout() {
   const navItems = [
     { to: "/", label: "资源看板" },
     { to: "/my", label: "我的容器" },
+    { to: "/workspace", label: "工作区" },
     { to: "/profile", label: "个人资料" },
     ...(user?.role === "admin" ? [{ to: "/admin", label: "管理" }] : []),
   ];

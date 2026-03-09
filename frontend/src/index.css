@@ -138,15 +138,18 @@ a:hover {
   transform: translateY(0);
 }
 
+/* 主按钮：磨砂质感，无蓝紫 */
 .btn-primary {
-  background: linear-gradient(135deg, var(--sky) 0%, var(--lavender) 100%);
-  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
-  box-shadow: 0 4px 15px rgba(51, 154, 240, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 6px 25px rgba(51, 154, 240, 0.5);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
 }
 
@@ -154,6 +157,25 @@ a:hover {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+/* 通用磨砂按钮（与 .btn 一致风格，用于复制等） */
+.btn-frosted {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text);
+}
+
+.btn-frosted:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-sm {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
 }
 
 .btn-ghost {
@@ -246,19 +268,22 @@ a:hover {
   50% { transform: translateY(-6px); }
 }
 
-/* 复制按钮 */
+/* 复制按钮：磨砂质感 */
 .btn-copy {
-  padding: 0.35rem 0.75rem;
-  font-size: 0.85rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  background: linear-gradient(135deg, var(--sky) 0%, var(--lavender) 100%);
-  color: #fff;
-  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-sm);
+  color: var(--text);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .btn-copy:hover {
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
 }

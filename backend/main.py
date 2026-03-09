@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api import auth, dashboard, containers, admin, leases
+from app.api import auth, dashboard, containers, admin, leases, workspace
 from app.database import init_db, create_default_admin
 
 app = FastAPI(title="Lab-GPU-Manager", version="1.0.0")
@@ -27,6 +27,7 @@ app.include_router(dashboard.router, prefix="/api/dashboard", tags=["看板"])
 app.include_router(containers.router, prefix="/api/containers", tags=["容器"])
 app.include_router(leases.router, prefix="/api/leases", tags=["租期"])
 app.include_router(admin.router, prefix="/api/admin", tags=["管理员"])
+app.include_router(workspace.router, prefix="/api/workspace", tags=["工作区"])
 
 
 @app.get("/api/health")
