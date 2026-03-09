@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { fetcher } from "../api/client";
 import "./MyContainers.css";
 
-const PORT_LABELS: Record<number, string> = { 8888: "Jupyter", 6006: "TensorBoard", 8080: "Web" };
+const PORT_LABELS: Record<string, string> = { 8888: "Jupyter", 6006: "TensorBoard", 8080: "Code Server" };
 
 interface Container {
   id: number;
@@ -120,6 +120,16 @@ export default function MyContainers() {
                     ) : "-"}
                   </td>
                   <td className="col-actions">
+                    {c.status === "running" && c.extra_ports?.["8080"] && (
+                      <a
+                        href={`${window.location.protocol}//${window.location.hostname}:${c.extra_ports["8080"]}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-frosted btn-sm"
+                      >
+                        打开 Code
+                      </a>
+                    )}
                     {c.status === "running" && (
                       <button
                         type="button"

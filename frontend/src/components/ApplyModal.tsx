@@ -2,7 +2,7 @@ import { useState } from "react";
 import { fetcher } from "../api/client";
 import "./ApplyModal.css";
 
-const SERVICE_LABELS: Record<number, string> = { 8888: "Jupyter", 6006: "TensorBoard", 8080: "Web" };
+const SERVICE_LABELS: Record<number, string> = { 8888: "Jupyter", 6006: "TensorBoard", 8080: "Code Server" };
 
 interface ApplyModalProps {
   freeGpus: number[];
@@ -145,16 +145,18 @@ export default function ApplyModal({ freeGpus, onClose, onSuccess }: ApplyModalP
           )}
           <div className="form-group">
             <label>租期（天）</label>
-            <select
-              value={leaseDays}
-              onChange={(e) => setLeaseDays(parseInt(e.target.value, 10))}
-            >
+            <div className="lease-days-row" role="group" aria-label="选择租期">
               {[1, 2, 3, 4, 5, 6, 7].map((d) => (
-                <option key={d} value={d}>
+                <button
+                  key={d}
+                  type="button"
+                  className={`lease-day-btn ${leaseDays === d ? "active" : ""}`}
+                  onClick={() => setLeaseDays(d)}
+                >
                   {d} 天
-                </option>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
           <p className="modal-hint">
             SSH 与常用端口(Jupyter/TensorBoard/Web) 随机映射，密码自动分配；个人目录挂载至 /workspace

@@ -180,8 +180,15 @@
   box-sizing: border-box;
 }
 
+.modal-editor { max-width: 720px; }
 .modal-editor .modal-body { padding: 0.75rem 1rem; }
-.modal-editor .modal-body .workspace-textarea { display: block; }
+.modal-body-editor {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #1e1e1e;
+}
+.modal-body-editor .monaco-editor { padding: 0; }
 
 .btn-danger {
   color: #f87171;

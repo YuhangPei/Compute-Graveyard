@@ -12,6 +12,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-server curl wget vim git tmux htop screen net-tools iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
+# 1.1 安装 code-server（VS Code 浏览器版），与宿主机映射的 8080 端口一致
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+
 # 2. 安装 Miniconda 并配置国内源 (清华源)
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p $CONDA_DIR && \
@@ -48,7 +51,7 @@ RUN echo "Banner /etc/ssh/banner.txt" >> /etc/ssh/sshd_config && \
 
 # 6. 工作目录与权限
 WORKDIR /workspace
-EXPOSE 22
+EXPOSE 22 8080
 
 # 启动时通过 SSH_PASSWORD 环境变量设置 root 密码（Lab-GPU-Manager 注入随机密码）
 ENTRYPOINT ["/entrypoint.sh"]

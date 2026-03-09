@@ -1,6 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
+import Editor from "@monaco-editor/react";
 import { fetcher, fetcherText } from "../api/client";
 import "./Workspace.css";
+
+function getLanguage(path: string): string {
+  const ext = path.split(".").pop()?.toLowerCase() ?? "";
+  const map: Record<string, string> = {
+    js: "javascript", ts: "typescript", jsx: "javascript", tsx: "typescript",
+    py: "python", json: "json", md: "markdown", yml: "yaml", yaml: "yaml",
+    sh: "shell", bash: "shell", html: "html", css: "css", vue: "vue",
+    env: "plaintext", txt: "plaintext", log: "plaintext", cfg: "ini", ini: "ini",
+  };
+  return map[ext] ?? "plaintext";
+}
 
 interface WorkspaceItem {
   name: string;
@@ -208,12 +220,20 @@ export default function Workspace() {
               <h2>编辑: {editPath}</h2>
               <button type="button" className="btn btn-ghost" onClick={() => setEditPath(null)}>×</button>
             </div>
-            <div className="modal-body">
-              <textarea
-                className="workspace-textarea"
+            <div className="modal-body modal-body-editor">
+              <Editor
+                height="360px"
+                language={editPath ? getLanguage(editPath) : "plaintext"}
                 value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                spellCheck={false}
+                onChange={(v) => setEditContent(v ?? "")}
+                theme="vs-dark"
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 13,
+                  scrollBeyondLastLine: false,
+                  wordWrap: "on",
+                }}
+                loading={null}
               />
             </div>
             <div className="modal-actions">
