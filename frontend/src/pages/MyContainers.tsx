@@ -134,7 +134,7 @@ export default function MyContainers() {
                       <button
                         type="button"
                         className="btn btn-frosted btn-sm"
-                        onClick={(e) => copyAndFeedback(`ssh -p ${c.ssh_port} root@服务器IP`, e.currentTarget)}
+                        onClick={(e) => copyAndFeedback(`ssh -p ${c.ssh_port} root@${window.location.hostname}`, e.currentTarget)}
                       >
                         复制 SSH
                       </button>

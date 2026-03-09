@@ -96,7 +96,7 @@ export default function ApplyModal({ freeGpus, onClose, onSuccess }: ApplyModalP
                 ))}
               </div>
             )}
-            <p className="ssh-cmd">ssh -p {created.ssh_port} root@服务器IP</p>
+            <p className="ssh-cmd">ssh -p {created.ssh_port} root@{window.location.hostname}</p>
           </div>
           <div className="modal-actions">
             <button type="button" className="btn btn-primary" onClick={handleDone}>完成</button>
@@ -123,25 +123,25 @@ export default function ApplyModal({ freeGpus, onClose, onSuccess }: ApplyModalP
             </label>
           </div>
           {!cpuOnly && (
-          <div className="form-group">
-            <label>选择 GPU（可多选）</label>
-            <div className="gpu-checkboxes">
-              {freeGpus.length === 0 ? (
-                <p className="no-free">暂无可用的 GPU</p>
-              ) : (
-                freeGpus.map((g) => (
-                  <label key={g} className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(g)}
-                      onChange={() => toggleGpu(g)}
-                    />
-                    GPU {g}
-                  </label>
-                ))
-              )}
+            <div className="form-group">
+              <label>选择 GPU（可多选）</label>
+              <div className="gpu-checkboxes">
+                {freeGpus.length === 0 ? (
+                  <p className="no-free">暂无可用的 GPU</p>
+                ) : (
+                  freeGpus.map((g) => (
+                    <label key={g} className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(g)}
+                        onChange={() => toggleGpu(g)}
+                      />
+                      GPU {g}
+                    </label>
+                  ))
+                )}
+              </div>
             </div>
-          </div>
           )}
           <div className="form-group">
             <label>租期（天）</label>
