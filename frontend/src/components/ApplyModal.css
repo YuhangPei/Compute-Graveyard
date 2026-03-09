@@ -1,0 +1,231 @@
+/* ========== ApplyModal — 玻璃弹窗 ========== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.modal-header .btn-ghost {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  border-radius: var(--radius-md);
+}
+
+.modal-header .btn-ghost:hover {
+  background: var(--glass-bg-strong);
+}
+
+.modal .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.modal .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.modal .form-group .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.9rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.modal .form-group .checkbox-label:hover {
+  border-color: var(--glass-border);
+}
+
+.modal .form-group .checkbox-label:has(input:checked) {
+  border-color: var(--mint);
+  background: rgba(81, 207, 102, 0.15);
+}
+
+.modal .form-group .checkbox-label input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--mint);
+}
+
+.gpu-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gpu-checkboxes .checkbox-label {
+  padding: 0.5rem 0.9rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.gpu-checkboxes .checkbox-label:hover {
+  border-color: var(--glass-border);
+}
+
+.gpu-checkboxes .checkbox-label:has(input:checked) {
+  border-color: var(--sky-soft);
+  background: rgba(51, 154, 240, 0.15);
+}
+
+.gpu-checkboxes .checkbox-label input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--sky);
+}
+
+.no-free {
+  color: var(--text-muted);
+  margin: 0;
+  padding: 1rem 0;
+}
+
+.modal .form-group select {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.modal .form-group select:focus {
+  outline: none;
+  border-color: var(--sky-soft);
+}
+
+.modal-hint {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 1rem 0;
+  line-height: 1.5;
+}
+
+.modal .form-error {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin: 1rem 0;
+  padding: 0.6rem 0.9rem;
+  background: rgba(255, 107, 107, 0.15);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.modal-actions .btn-primary {
+  width: auto;
+}
+
+/* 申请成功 */
+.modal-success .created-info {
+  padding: 0.5rem 0;
+}
+
+.created-info p {
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+}
+
+.created-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.6rem 0;
+}
+
+.created-row span {
+  min-width: 90px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.created-row code {
+  flex: 1;
+  font-family: var(--font-mono);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.4rem 0.7rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border-light);
+}
+
+.created-info .ssh-cmd {
+  margin-top: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  padding: 0.65rem 1rem;
+  background: rgba(51, 154, 240, 0.15);
+  color: var(--sky-soft);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(51, 154, 240, 0.3);
+}
+
+.extra-ports {
+  margin: 0.75rem 0;
+}
+
+.extra-ports .label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--text-muted);
+}
+
+.extra-ports .port-row {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+}

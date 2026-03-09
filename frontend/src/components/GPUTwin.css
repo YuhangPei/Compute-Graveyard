@@ -1,0 +1,476 @@
+/* ========== GPU 数字孪生 — Digital Twin 风格 ========== */
+
+.twin-wrap {
+  position: relative;
+  width: 100%;
+  padding: 1rem 1.5rem 2rem;
+  margin-bottom: 2rem;
+  color: #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.twin-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, #1f1f1f 1px, transparent 1px),
+    linear-gradient(to bottom, #1f1f1f 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, #000 40%, transparent 100%);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.twin-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  max-width: 100%;
+  height: 300px;
+  background: rgba(16, 185, 129, 0.1);
+  filter: blur(100px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.twin-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.twin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+.twin-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: twin-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes twin-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.twin-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(to right, #fff, #e4e4e7, #71717a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.twin-title-icon {
+  color: #10b981;
+}
+
+.twin-motherboard {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 1rem;
+  bottom: 1rem;
+  width: 100%;
+  max-width: 1200px;
+  background: rgba(24, 24, 27, 0.3);
+  border: 1px solid rgba(39, 39, 42, 0.5);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  z-index: 0;
+  overflow: hidden;
+}
+
+.twin-motherboard svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.2;
+}
+
+.twin-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem 3rem;
+  position: relative;
+  z-index: 2;
+  padding: 0.5rem 0;
+}
+
+@media (min-width: 1024px) {
+  .twin-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.twin-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* ----- Fan ----- */
+.twin-fan-wrap {
+  position: relative;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  border: 3px solid #27272a;
+  background: #09090b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 2;
+}
+
+.twin-fan-hub {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #27272a;
+  border: 2px solid #3f3f46;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.twin-fan-hub::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #52525b;
+}
+
+.twin-fan-blades {
+  width: 100%;
+  height: 100%;
+}
+
+.twin-fan-blades svg {
+  width: 100%;
+  height: 100%;
+  color: #52525b;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* ----- GPU Visual ----- */
+.twin-gpu-visual {
+  position: relative;
+  width: 14rem;
+  height: 5rem;
+  background: #18181b;
+  border-radius: 0.5rem;
+  border: 2px solid #27272a;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 0.5rem;
+  z-index: 2;
+}
+
+.twin-gpu-cables {
+  position: absolute;
+  top: 50%;
+  left: -3rem;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
+}
+
+.twin-gpu-cables svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.twin-gpu-heatsink {
+  position: absolute;
+  inset: 4px;
+  opacity: 0.3;
+  background: repeating-linear-gradient(90deg, transparent, transparent 2px, #52525b 2px, #52525b 3px);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.twin-gpu-edge {
+  position: absolute;
+  top: -0.6rem;
+  left: 0.75rem;
+  background: #27272a;
+  padding: 0.15rem 0.4rem;
+  border-radius: 2px;
+  font-size: 8px;
+  font-family: var(--font-mono);
+  color: #a1a1aa;
+  border: 1px solid #3f3f46;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.twin-gpu-pcie {
+  position: absolute;
+  bottom: -0.35rem;
+  left: 2rem;
+  width: 6rem;
+  height: 6px;
+  background: rgba(161, 98, 7, 0.4);
+  border: 1px solid rgba(234, 179, 8, 0.5);
+  border-radius: 0 0 2px 2px;
+}
+
+.twin-gpu-led {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.5rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.twin-gpu-led.idle {
+  background: #52525b;
+  color: #52525b;
+}
+
+.twin-gpu-led.active {
+  background: #10b981;
+  color: #10b981;
+}
+
+.twin-gpu-led.critical {
+  background: #ef4444;
+  color: #ef4444;
+}
+
+/* 电源线流动动画 */
+@keyframes twin-flow-right {
+  to { stroke-dashoffset: -30; }
+}
+
+.twin-cable-flow {
+  animation: twin-flow-right 1.5s linear infinite;
+}
+
+/* ----- Connection Line ----- */
+.twin-conn {
+  width: 3rem;
+  height: 8px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.twin-conn svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.twin-conn-active {
+  animation: twin-flow-right 1.2s linear infinite;
+}
+
+/* ----- Info Card ----- */
+.twin-card {
+  width: 16rem;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.twin-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.twin-card-glow {
+  position: absolute;
+  top: -2rem;
+  right: -2rem;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.2;
+  transition: opacity 0.5s;
+}
+
+.twin-card-glow.idle { background: #52525b; }
+.twin-card-glow.active { background: #10b981; }
+.twin-card-glow.critical { background: #ef4444; }
+
+.twin-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.twin-card-model {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.twin-card-id {
+  font-size: 10px;
+  color: #a1a1aa;
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+
+.twin-card-badge {
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.twin-card-badge.idle { color: #a1a1aa; }
+.twin-card-badge.active { color: #34d399; }
+.twin-card-badge.critical { color: #f87171; }
+
+.twin-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.75rem;
+}
+
+.twin-card-row span:first-child {
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.twin-card-row span:last-child {
+  color: #fff;
+  font-weight: 500;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.twin-card-bar-wrap {
+  padding-top: 0.2rem;
+}
+
+.twin-card-bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.twin-card-bar-label span:first-child {
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.twin-card-bar-label span:last-child {
+  color: #fff;
+  font-family: var(--font-mono);
+}
+
+.twin-card-bar-bg {
+  height: 4px;
+  width: 100%;
+  background: #27272a;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.twin-card-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+
+.twin-bar-green { background: #10b981; }
+.twin-bar-red { background: #ef4444; }
+.twin-bar-cyan { background: #06b6d4; }
+
+.twin-card-temp {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.twin-card-temp span:first-child {
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.twin-card-temp span:last-child {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.twin-card-temp.critical span:last-child {
+  color: #f87171;
+}
+
+.twin-no-gpu {
+  grid-column: 1 / -1;
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  border: 2px dashed var(--glass-border);
+  border-radius: var(--radius-lg);
+}

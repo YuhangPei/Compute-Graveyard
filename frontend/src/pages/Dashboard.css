@@ -1,0 +1,483 @@
+/* ========== Dashboard — 数字孪生风格 ========== */
+.dashboard {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.dashboard-twin {
+  min-height: 100vh;
+  background: #050505;
+  color: #fff;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.dashboard-twin-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, #1f1f1f 1px, transparent 1px),
+    linear-gradient(to bottom, #1f1f1f 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, #000 40%, transparent 100%);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.dashboard-twin-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  max-width: 100%;
+  height: 300px;
+  background: rgba(16, 185, 129, 0.1);
+  filter: blur(100px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.dashboard-twin .dashboard-header {
+  position: relative;
+  z-index: 10;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--text) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dashboard-header .btn-primary {
+  padding: 0.7rem 1.5rem;
+  font-weight: 700;
+}
+
+/* ========== 主布局：左侧内容 + 右侧排行 ========== */
+.dashboard-twin .dashboard-body {
+  position: relative;
+  z-index: 10;
+}
+
+.dashboard-body {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.dashboard-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ========== 使用时长排行面板 ========== */
+.ranking-panel {
+  flex-shrink: 0;
+  width: 220px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  animation: fadeInUp 0.6s ease-out 0.25s backwards;
+}
+
+.ranking-panel h2 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ranking-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.ranking-tabs button {
+  flex: 1;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ranking-tabs button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+
+.ranking-tabs button.active {
+  background: var(--sky);
+  color: #fff;
+  border-color: var(--sky);
+}
+
+.ranking-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ranking-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--glass-border-light);
+  font-size: 0.9rem;
+}
+
+.ranking-list li:last-child {
+  border-bottom: none;
+}
+
+.rank-num {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+}
+
+.ranking-list li:nth-child(1) .rank-num {
+  background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+  color: #1a1a1a;
+}
+
+.ranking-list li:nth-child(2) .rank-num {
+  background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%);
+  color: #1a1a1a;
+}
+
+.ranking-list li:nth-child(3) .rank-num {
+  background: linear-gradient(135deg, #cd7f32 0%, #b87333 100%);
+  color: #1a1a1a;
+}
+
+.rank-user {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-hours {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--amber);
+}
+
+.rank-empty {
+  color: var(--text-muted);
+  font-style: italic;
+  justify-content: center;
+}
+
+/* ========== 时长高亮（占用过久提示） ========== */
+.duration-highlight {
+  color: var(--amber) !important;
+  font-weight: 700;
+}
+
+.occupancy-table .duration-cell {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--amber);
+}
+
+.dashboard-error {
+  color: var(--danger);
+  padding: 1.5rem;
+  background: rgba(255, 107, 107, 0.15);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+/* ========== 系统负载 ========== */
+.system-load {
+  margin-bottom: 2rem;
+}
+
+.system-load h2 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.load-cards {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.load-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  min-width: 170px;
+  flex: 1;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.load-card:nth-child(1) { animation-delay: 0.05s; }
+.load-card:nth-child(2) { animation-delay: 0.1s; }
+.load-card:nth-child(3) { animation-delay: 0.15s; }
+
+.load-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  border-color: var(--glass-border);
+}
+
+.load-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.load-value {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* ========== GPU 卡片 ========== */
+.gpu-section {
+  margin-bottom: 2rem;
+}
+
+.gpu-section h2 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.gpu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.gpu-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.gpu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.gpu-card:nth-child(1) { animation-delay: 0.1s; }
+.gpu-card:nth-child(2) { animation-delay: 0.15s; }
+.gpu-card:nth-child(3) { animation-delay: 0.2s; }
+.gpu-card:nth-child(4) { animation-delay: 0.25s; }
+.gpu-card:nth-child(5) { animation-delay: 0.3s; }
+.gpu-card:nth-child(6) { animation-delay: 0.35s; }
+.gpu-card:nth-child(7) { animation-delay: 0.4s; }
+.gpu-card:nth-child(8) { animation-delay: 0.45s; }
+
+.gpu-card.free {
+  border-left: 4px solid var(--mint);
+}
+
+.gpu-card.occupied {
+  border-left: 4px solid var(--amber);
+}
+
+.gpu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.gpu-id {
+  font-weight: 800;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+.gpu-status {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+}
+
+.gpu-status.free {
+  background: rgba(81, 207, 102, 0.25);
+  color: var(--mint);
+}
+
+.gpu-status.occupied {
+  background: rgba(255, 193, 7, 0.25);
+  color: var(--amber);
+}
+
+.gpu-name {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.85rem;
+}
+
+.gpu-mem {
+  margin-bottom: 0.6rem;
+}
+
+.mem-bar {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 0.35rem;
+}
+
+.mem-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sky) 0%, var(--lavender) 100%);
+  transition: width 0.4s ease;
+  border-radius: var(--radius-full);
+}
+
+.gpu-mem span {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.gpu-temp {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.gpu-occupancy {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--glass-border-light);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.gpu-occupancy div {
+  margin: 0.25rem 0;
+}
+
+.no-gpu {
+  grid-column: 1 / -1;
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  border: 2px dashed var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+/* ========== 占用表 ========== */
+.occupancy-table {
+  margin-top: 2rem;
+}
+
+.occupancy-table h2 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.occupancy-table .table-wrap {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+.occupancy-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.occupancy-table th,
+.occupancy-table td {
+  padding: 0.9rem 1.25rem;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border-light);
+}
+
+.occupancy-table tr:last-child td {
+  border-bottom: none;
+}
+
+.occupancy-table tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.occupancy-table th {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 1024px) {
+  .dashboard-body {
+    flex-direction: column;
+  }
+
+  .ranking-panel {
+    width: 100%;
+    ma

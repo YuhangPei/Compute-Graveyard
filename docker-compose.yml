@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  lab-gpu-manager:
+    build: .
+    container_name: lab-gpu-manager
+    ports:
+      - "8099:3000"   # 宿主机 3001 -> 容器 3000，避免与本地 3000 冲突
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - lab-gpu-data:/app/data
+      - /data1:/data1   # 用户目录 /data1/{username} -> 容器 /workspace
+    environment:
+      - DATABASE_URL=sqlite:///./data/lab_gpu.db
+      - JWT_SECRET=change-this-in-production
+      - USER_DATA_BASE=/data1
+      - PUBLIC_DATASETS=/data/public_datasets
+      - DOCKER_BASE_IMAGE=lab-image:latest
+      - SSH_PORT_START=20000
+      - SSH_PORT_END=21000
+      - DEFAULT_LEASE_DAYS=3
+      - MAX_LEASE_DAYS=7
+      - MAX_GPUS_PER_USER=2
+    restart: unless-stopped
+    # 需宿主机已安装 nvidia-container-toolkit，以便容器内执行 nvidia-smi 获取 GPU 信息
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    user: root
+
+volumes:
+  lab-gpu-data:

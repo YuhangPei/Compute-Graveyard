@@ -1,0 +1,178 @@
+/* ========== MyContainers — 玻璃卡片 ========== */
+.my-containers {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.my-containers h1 {
+  margin: 0 0 1.75rem 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--text) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.empty {
+  color: var(--text-muted);
+  padding: 3rem;
+  text-align: center;
+  background: var(--glass-bg);
+  border: 2px dashed var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.my-error {
+  color: var(--danger);
+  padding: 1.5rem;
+  background: rgba(255, 107, 107, 0.15);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.container-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.container-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.container-card:nth-child(1) { animation-delay: 0.05s; }
+.container-card:nth-child(2) { animation-delay: 0.1s; }
+.container-card:nth-child(3) { animation-delay: 0.15s; }
+.container-card:nth-child(4) { animation-delay: 0.2s; }
+
+.container-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.container-card.status-running {
+  border-left: 4px solid var(--mint);
+}
+
+.container-card.status-stopped {
+  border-left: 4px solid var(--amber);
+}
+
+.container-card.status-removed {
+  border-left: 4px solid var(--text-muted);
+}
+
+.container-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.container-name {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+}
+
+.status-badge.running {
+  background: rgba(81, 207, 102, 0.25);
+  color: var(--mint);
+}
+
+.status-badge.stopped {
+  background: rgba(255, 193, 7, 0.25);
+  color: var(--amber);
+}
+
+.status-badge.removed {
+  background: rgba(173, 181, 189, 0.2);
+  color: var(--text-muted);
+}
+
+.container-info {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.container-info div {
+  margin: 0.35rem 0;
+}
+
+.ssh-password {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.6rem 0;
+  padding: 0.6rem 0.9rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border-light);
+}
+
+.ssh-password .label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.ssh-password .password {
+  font-family: var(--font-mono);
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.ssh-hint {
+  margin-top: 0.6rem;
+}
+
+.ssh-hint code {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: rgba(51, 154, 240, 0.15);
+  color: var(--sky-soft);
+  border: 1px solid rgba(51, 154, 240, 0.3);
+}
+
+.extra-ports {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.extra-ports .label {
+  display: block;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.extra-ports .port-item {
+  display: inline-block;
+  margin-right: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-sm);
+}
+
+.renew-btn {
+  margin-top: 1.25rem;
+  width: auto;
+  padding: 0.6rem 1.25rem;
+}
