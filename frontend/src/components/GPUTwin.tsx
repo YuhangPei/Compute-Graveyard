@@ -19,6 +19,8 @@ export interface Occupancy {
   username: string;
   display_name: string;
   real_name?: string | null;
+  contact_type?: string | null;
+  contact_value?: string | null;
   expires_at: string;
   duration_hours?: number | null;
   ssh_port?: number;
@@ -30,6 +32,8 @@ interface TwinGPUData {
   utilization: number;
   power: number;
   user: string;
+  contact?: string;
+  isOccupied: boolean;
   uptime: string;
   temp: number;
   memoryPercent: number;
@@ -40,12 +44,17 @@ function buildTwinData(gpus: GPUInfo[], occupancies: Occupancy[]): TwinGPUData[]
     const occ = occupancies.find((o) => o.gpu_index === gpu.index);
     const util = gpu.utilization ?? gpu.memory_percent;
     const power = Math.round((util / 100) * 350);
+    const contactInfo = occ?.contact_value
+      ? `(${occ.contact_type === "wechat" ? "微信" : "手机"}: ${occ.contact_value})`
+      : "";
     return {
       id: gpu.index,
       model: gpu.name,
       utilization: Math.min(100, util),
       power,
       user: occ ? occ.real_name || occ.display_name || occ.username : "空闲",
+      contact: contactInfo,
+      isOccupied: !!occ,
       uptime: occ?.duration_hours != null ? `${occ.duration_hours}h` : "-",
       temp: gpu.temperature ?? 0,
       memoryPercent: gpu.memory_percent,
@@ -88,7 +97,7 @@ const Fan = ({ speed }: { speed: number }) => {
 
 /* 风扇旋转 keyframes 在 CSS 中定义 */
 const GPUVisual = ({ data }: { data: TwinGPUData }) => {
-  const isIdle = data.utilization === 0;
+  const isIdle = !data.isOccupied;
   const powerColor = data.power > 300 ? "#ef4444" : data.power > 100 ? "#10b981" : "#00ffcc";
 
   return (
@@ -128,14 +137,14 @@ const GPUVisual = ({ data }: { data: TwinGPUData }) => {
       <Fan speed={data.utilization} />
       <Fan speed={data.utilization} />
       <div
-        className={`twin-gpu-led ${data.temp > 80 ? "critical" : isIdle ? "idle" : "active"}`}
+        className={`twin-gpu-led ${data.temp > 80 ? "critical" : !data.isOccupied ? "idle" : "active"}`}
       />
     </div>
   );
 };
 
 const ConnectionLine = ({ data }: { data: TwinGPUData }) => {
-  const isActive = data.utilization > 0;
+  const isActive = data.isOccupied;
   const color = data.temp > 80 ? "#ef4444" : isActive ? "#10b981" : "#52525b";
 
   return (
@@ -161,7 +170,7 @@ const ConnectionLine = ({ data }: { data: TwinGPUData }) => {
 };
 
 const InfoCard = ({ data }: { data: TwinGPUData }) => {
-  const isActive = data.utilization > 0;
+  const isActive = data.isOccupied;
   const isCritical = data.temp > 80;
   const statusClass = isCritical ? "critical" : isActive ? "active" : "idle";
   const statusText = isCritical ? "高温" : isActive ? "占用" : "空闲";
@@ -178,7 +187,9 @@ const InfoCard = ({ data }: { data: TwinGPUData }) => {
       </div>
       <div className="twin-card-row">
         <span><User size={12} /> 用户</span>
-        <span title={data.user}>{data.user}</span>
+        <span title={data.user + " " + (data.contact || "")}>
+          {data.user} <small style={{ opacity: 0.7, fontSize: '0.7rem' }}>{data.contact}</small>
+        </span>
       </div>
       <div className="twin-card-row">
         <span><Clock size={12} /> 时长</span>

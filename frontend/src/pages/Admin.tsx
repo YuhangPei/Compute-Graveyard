@@ -112,6 +112,17 @@ export default function Admin() {
     }
   };
 
+  const handleDeleteUser = async (id: number, username: string) => {
+    if (!confirm(`确定要彻底删除用户 "${username}" 吗？该用户的所有容器也会被销毁！`)) return;
+    try {
+      await fetcher(`/admin/users/${id}`, { method: "DELETE" });
+      await loadUsers();
+      await loadContainers(); // 用户被删，容器也会被删
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "删除失败");
+    }
+  };
+
   return (
     <div className="admin-page">
       <h1>管理后台</h1>
@@ -187,6 +198,7 @@ export default function Admin() {
               <th>联系方式</th>
               <th>状态</th>
               <th>角色</th>
+              <th>操作</th>
             </tr>
           </thead>
           <tbody>
@@ -198,6 +210,17 @@ export default function Admin() {
                 <td>{u.contact_value ? (u.contact_type === "wechat" ? "微信 " : "手机 ") + u.contact_value : "-"}</td>
                 <td>{u.approved ? "已通过" : "待审批"}</td>
                 <td>{u.role}</td>
+                <td>
+                  {u.role !== "admin" && (
+                    <button
+                      className="btn btn-small btn-danger"
+                      onClick={() => handleDeleteUser(u.id, u.username)}
+                      style={{ color: "#ef4444" }}
+                    >
+                      删除
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

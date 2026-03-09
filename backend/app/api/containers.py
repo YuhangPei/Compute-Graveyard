@@ -136,3 +136,30 @@ def my_containers(user=Depends(get_current_user), db=Depends(get_db)):
             created_at=r.created_at,
         ))
     return result
+
+
+@router.delete("/{container_id}")
+def delete_container(container_id: int, user=Depends(get_current_user), db=Depends(get_db)):
+    from app.docker_service import stop_container, remove_container
+    
+    c = db.query(ContainerModel).filter(ContainerModel.id == container_id).first()
+    if not c:
+        raise HTTPException(status_code=404, detail="容器不存在")
+    
+    # 权限校验：只能删除自己的容器（管理员除外）
+    if c.user_id != user.id and user.role != "admin":
+        raise HTTPException(status_code=403, detail="无权操作此容器")
+    
+    # 如果容器正在运行或处于停止状态，尝试从 Docker 层面清理
+    if c.container_id:
+        try:
+            stop_container(c.container_id)
+            remove_container(c.container_id)
+        except:
+            pass
+    
+    # 从数据库彻底移除（或按之前的逻辑改为 removed）
+    # 用户明确要求“不要占用空间”，这里直接从数据库删除记录
+    db.delete(c)
+    db.commit()
+    return {"message": "容器已成功停止并销毁"}

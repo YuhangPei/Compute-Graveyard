@@ -111,74 +111,74 @@ export default function Dashboard() {
 
       <div className="dashboard-body">
         <div className="dashboard-main">
-      {/* 系统负载 */}
-      {data?.system_load && (
-        <section className="system-load">
-          <h2>系统负载</h2>
-          <div className="load-cards">
-            <div className="load-card">
-              <span className="load-label">CPU</span>
-              <span className="load-value">{data.system_load.cpu_percent}%</span>
-            </div>
-            <div className="load-card">
-              <span className="load-label">内存</span>
-              <span className="load-value">
-                {data.system_load.memory_used_gb} / {data.system_load.memory_total_gb} GB ({data.system_load.memory_percent}%)
-              </span>
-            </div>
-            <div className="load-card">
-              <span className="load-label">磁盘可用</span>
-              <span className="load-value">{data.system_load.disk_free_gb} GB</span>
-            </div>
-          </div>
-        </section>
-      )}
+          {/* 系统负载 */}
+          {data?.system_load && (
+            <section className="system-load">
+              <h2>系统负载</h2>
+              <div className="load-cards">
+                <div className="load-card">
+                  <span className="load-label">CPU</span>
+                  <span className="load-value">{data.system_load.cpu_percent}%</span>
+                </div>
+                <div className="load-card">
+                  <span className="load-label">内存</span>
+                  <span className="load-value">
+                    {data.system_load.memory_used_gb} / {data.system_load.memory_total_gb} GB ({data.system_load.memory_percent}%)
+                  </span>
+                </div>
+                <div className="load-card">
+                  <span className="load-label">工作区可用</span>
+                  <span className="load-value">{data.system_load.disk_free_gb} GB</span>
+                </div>
+              </div>
+            </section>
+          )}
 
-      {/* GPU 数字孪生 */}
-      <GPUTwin gpus={data?.gpus ?? []} occupancies={data?.occupancies ?? []} />
+          {/* GPU 数字孪生 */}
+          <GPUTwin gpus={data?.gpus ?? []} occupancies={data?.occupancies ?? []} />
 
-      {/* 全部运行中容器及联系方式 */}
-      {data?.all_containers && data.all_containers.length > 0 && (
-        <section className="occupancy-table">
-          <h2>当前占用（含联系方式，便于联系）</h2>
-          <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>类型</th>
-                <th>容器名</th>
-                <th>使用者</th>
-                <th>联系方式</th>
-                <th>开始时间</th>
-                <th>已用时长</th>
-                <th>到期时间</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.all_containers.map((c, i) => (
-                <tr key={`${c.container_name}-${i}`}>
-                  <td>{c.gpu_ids === "CPU" ? "CPU" : `GPU ${c.gpu_ids}`}</td>
-                  <td>{c.container_name}</td>
-                  <td>{c.real_name || c.display_name || c.username}</td>
-                  <td>
-                    {c.contact_value ? (
-                      <span>{c.contact_type === "wechat" ? "微信 " : "手机 "}{c.contact_value}</span>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td>{c.created_at ? new Date(c.created_at).toLocaleString() : "-"}</td>
-                  <td className="duration-cell">
-                    {c.duration_hours != null ? `${c.duration_hours} 小时` : "-"}
-                  </td>
-                  <td>{new Date(c.expires_at).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          </div>
-        </section>
-      )}
+          {/* 全部运行中容器及联系方式 */}
+          {data?.all_containers && data.all_containers.length > 0 && (
+            <section className="occupancy-table">
+              <h2>当前占用（含联系方式，便于联系）</h2>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>类型</th>
+                      <th>容器名</th>
+                      <th>使用者</th>
+                      <th>联系方式</th>
+                      <th>开始时间</th>
+                      <th>已用时长</th>
+                      <th>到期时间</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.all_containers.map((c, i) => (
+                      <tr key={`${c.container_name}-${i}`}>
+                        <td>{c.gpu_ids === "CPU" ? "CPU" : `GPU ${c.gpu_ids}`}</td>
+                        <td>{c.container_name}</td>
+                        <td>{c.real_name || c.display_name || c.username}</td>
+                        <td>
+                          {c.contact_value ? (
+                            <span>{c.contact_type === "wechat" ? "微信 " : "手机 "}{c.contact_value}</span>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+                        <td>{c.created_at ? new Date(c.created_at).toLocaleString() : "-"}</td>
+                        <td className="duration-cell">
+                          {c.duration_hours != null ? `${c.duration_hours} 小时` : "-"}
+                        </td>
+                        <td>{new Date(c.expires_at).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
 
         </div>
 

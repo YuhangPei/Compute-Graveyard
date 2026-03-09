@@ -108,10 +108,37 @@
   text-decoration: none;
 }
 
+.sidebar-footer {
+  padding: 0 0.75rem;
+  margin-top: auto;
+  margin-bottom: 0.75rem;
+}
+
+.sidebar-btn-ins {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px dashed rgba(161, 161, 170, 0.3);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.sidebar-btn-ins:hover {
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
 .sidebar-user {
   padding: 1rem 1.5rem;
   margin: 0 0.75rem;
-  margin-top: auto;
   background: rgba(39, 39, 42, 0.6);
   border-radius: var(--radius-md);
   border: 1px solid rgba(63, 63, 70, 0.6);
@@ -217,19 +244,19 @@
   .sidebar {
     display: none;
   }
-  
+
   .main-wrap {
     margin-left: 0;
   }
-  
+
   .header {
     display: none;
   }
-  
+
   .main {
     padding: 1rem;
   }
-  
+
   .layout-mobile-header {
     display: flex;
     flex-direction: column;
@@ -249,7 +276,7 @@
     justify-content: space-between;
     align-items: center;
   }
-  
+
   .layout-mobile-header .sidebar-logo {
     padding: 0;
     font-size: 0.95rem;
@@ -266,31 +293,82 @@
     color: #d4d4d8;
     line-height: 1.4;
   }
-  
+
   .layout-mobile-nav {
     display: flex;
     gap: 0.35rem;
     align-items: center;
     flex-wrap: wrap;
   }
-  
+
   .layout-mobile-nav a {
     padding: 0.45rem 0.65rem;
     font-size: 0.85rem;
     color: var(--text-secondary);
     border-radius: var(--radius-sm);
   }
-  
+
   .layout-mobile-nav a.active {
     color: #34d399;
     background: rgba(16, 185, 129, 0.15);
   }
-  
+
   .layout-mobile-actions {
     display: flex;
     align-items: center;
     justify-content: flex-end;
   }
+}
+
+/* ========== 使用说明弹窗样式 ========== */
+.instruction-modal {
+  max-width: 600px !important;
+}
+
+.ins-section {
+  margin-bottom: 2rem;
+}
+
+.ins-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  color: #34d399;
+}
+
+.ins-section p {
+  font-size: 0.95rem;
+  color: #d4d4d8;
+  line-height: 1.6;
+}
+
+.ins-section ul {
+  padding-left: 1.25rem;
+  color: #d4d4d8;
+  font-size: 0.95rem;
+}
+
+.ins-section li {
+  margin-bottom: 0.5rem;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 @media (min-width: 769px) {

@@ -84,6 +84,32 @@ def reject_user(user_id: int, admin=Depends(get_current_admin), db=Depends(get_d
     return {"message": "已拒绝"}
 
 
+@router.delete("/users/{user_id}")
+def delete_user(user_id: int, admin=Depends(get_current_admin), db=Depends(get_db)):
+    u = db.query(UserModel).filter(UserModel.id == user_id).first()
+    if not u:
+        raise HTTPException(status_code=404, detail="用户不存在")
+    
+    if u.role == "admin":
+        # 防止自杀或删除其他管理员（可根据需求调整）
+        raise HTTPException(status_code=400, detail="不能在管理后台删除管理员账号")
+
+    # 先清理该用户的所有容器
+    containers = db.query(ContainerModel).filter(ContainerModel.user_id == user_id).all()
+    for c in containers:
+        if c.container_id:
+            try:
+                stop_container(c.container_id)
+                remove_container(c.container_id)
+            except:
+                pass
+        db.delete(c)
+    
+    db.delete(u)
+    db.commit()
+    return {"message": "用户及其关联资源已成功删除"}
+
+
 @router.post("/containers/{container_id}/force-stop")
 def force_stop(container_id: int, admin=Depends(get_current_admin), db=Depends(get_db)):
     c = db.query(ContainerModel).filter(ContainerModel.id == container_id).first()

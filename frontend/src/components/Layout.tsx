@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import "./Layout.css";
 import { useAuth } from "../hooks/useAuth";
+import InstructionModal from "./InstructionModal";
+import { HelpCircle } from "lucide-react";
 
 const SLOGANS = [
   "正在消耗 GPU 的寿命，换取一份无法收敛的 Loss。",
@@ -31,6 +33,7 @@ export default function Layout() {
   const loc = useLocation();
   const navigate = useNavigate();
   const [sloganIndex, setSloganIndex] = useState(0);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
     const t = setInterval(() => setSloganIndex((i) => (i + 1) % SLOGANS.length), 10000);
@@ -72,6 +75,17 @@ export default function Layout() {
             </Link>
           ))}
         </nav>
+
+        <div className="sidebar-footer">
+          <button
+            className="sidebar-btn-ins"
+            onClick={() => setShowInstructions(true)}
+          >
+            <HelpCircle size={18} />
+            <span>使用说明</span>
+          </button>
+        </div>
+
         <div className="sidebar-user">
           <div className="sidebar-user-info">
             <span className="user-name">{user?.display_name || user?.username}</span>
@@ -105,6 +119,13 @@ export default function Layout() {
             </Link>
           ))}
         </nav>
+        <button
+          className="btn btn-ghost"
+          style={{ padding: "0.35rem 0.6rem", fontSize: "0.85rem", marginRight: "1rem" }}
+          onClick={() => setShowInstructions(true)}
+        >
+          说明
+        </button>
         <div className="layout-mobile-actions">
           <button onClick={handleLogout} className="btn btn-ghost" style={{ padding: "0.35rem 0.6rem", fontSize: "0.85rem" }}>
             退出
@@ -129,6 +150,8 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
+
+      {showInstructions && <InstructionModal onClose={() => setShowInstructions(false)} />}
     </div>
   );
 }

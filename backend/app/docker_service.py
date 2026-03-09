@@ -241,7 +241,7 @@ def get_system_load() -> Dict[str, float]:
         import psutil
         cpu = psutil.cpu_percent(interval=1)
         mem = psutil.virtual_memory()
-        disk = psutil.disk_usage("/")
+        disk = psutil.disk_usage(USER_DATA_BASE) if USER_DATA_BASE else psutil.disk_usage("/")
         return {
             "cpu_percent": round(cpu, 1),
             "memory_used_gb": round(mem.used / (1024**3), 2),

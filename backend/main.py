@@ -37,7 +37,18 @@ async def health():
 # 静态文件（前端 SPA）必须放在最后，否则会拦截 /api 请求
 static_dir = Path(__file__).parent / "static"
 if static_dir.exists():
-    app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
+    app.mount("/assets", StaticFiles(directory=str(static_dir / "assets")), name="assets")
+
+    # 关键：处理 SPA 刷新 404 问题
+    from fastapi.responses import FileResponse
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # 如果请求的不是 API，且文件不存在，则返回 index.html
+        file_path = static_dir / full_path
+        if file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(static_dir / "index.html")
 
 
 @app.on_event("startup")

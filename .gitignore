@@ -4,3 +4,5 @@ backend/__pycache__
 backend/**/__pycache__
 .git
 .env*
+labsys-lab-gpu-manager.tar
+lab-image.tar

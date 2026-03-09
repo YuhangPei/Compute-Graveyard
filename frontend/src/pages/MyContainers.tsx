@@ -18,11 +18,33 @@ interface Container {
   created_at: string;
 }
 
-function copyAndFeedback(text: string, button: HTMLButtonElement) {
-  navigator.clipboard.writeText(text);
-  const orig = button.textContent;
-  button.textContent = "已复制";
-  setTimeout(() => { button.textContent = orig; }, 800);
+async function copyAndFeedback(text: string, button: HTMLButtonElement) {
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      // 降级方案：针对非 HTTPS 环境 (如通过 IP 访问)
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-9999px";
+      textArea.style.top = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      if (!successful) throw new Error("Fallback copy failed");
+    }
+    const orig = button.textContent;
+    button.textContent = "已复制";
+    setTimeout(() => { button.textContent = orig; }, 800);
+  } catch (err) {
+    console.error("复制失败:", err);
+    const orig = button.textContent;
+    button.textContent = "复制失败";
+    setTimeout(() => { button.textContent = orig; }, 1500);
+  }
 }
 
 export default function MyContainers() {
@@ -63,6 +85,16 @@ export default function MyContainers() {
     }
   };
 
+  const handleDelete = async (id: number, name: string) => {
+    if (!window.confirm(`确定要提前停止并销毁容器 "${name}" 吗？此操作不可逆，容器内未保存到 /workspace 的数据将丢失！`)) return;
+    try {
+      await fetcher(`/containers/${id}`, { method: "DELETE" });
+      await load();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "销毁失败");
+    }
+  };
+
   const statusText = (s: string) => (s === "running" ? "运行中" : s === "stopped" ? "已停止" : "已清理");
 
   if (loading) return <div className="loading">加载中...</div>;
@@ -100,8 +132,8 @@ export default function MyContainers() {
                   <td className="col-ports">
                     {c.extra_ports && Object.keys(c.extra_ports).length > 0
                       ? Object.entries(c.extra_ports).map(([cp, hp]) => (
-                          <span key={cp} className="port-item">{PORT_LABELS[Number(cp)] || cp}:{hp}</span>
-                        ))
+                        <span key={cp} className="port-item">{PORT_LABELS[cp] || cp}:{hp}</span>
+                      ))
                       : "-"}
                   </td>
                   <td className="col-mono col-date">{new Date(c.expires_at).toLocaleString()}</td>
@@ -148,6 +180,13 @@ export default function MyContainers() {
                         {renewing === c.id ? "续租中…" : "续租 3 天"}
                       </button>
                     )}
+                    <button
+                      className="btn btn-frosted btn-sm btn-danger-soft"
+                      onClick={() => handleDelete(c.id, c.name)}
+                      style={{ marginLeft: "0.5rem" }}
+                    >
+                      停止并销毁
+                    </button>
                   </td>
                 </tr>
               ))}
