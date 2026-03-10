@@ -143,7 +143,7 @@ def create_container(
             device_requests=device_requests,
             ports=ports_map,
             volumes=volumes,
-            environment={"SSH_PASSWORD": ssh_password},
+            environment={"SSH_PASSWORD": ssh_password, "TZ": "Asia/Shanghai"},
         )
         cid = container.id if hasattr(container, "id") else str(container) if container else None
         return (cid, ssh_password, extra_ports_map)

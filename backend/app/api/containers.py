@@ -67,9 +67,9 @@ def apply_container(req: ContainerApplyRequest, user=Depends(get_current_user), 
     if not ssh_port:
         raise HTTPException(status_code=500, detail="暂无可用 SSH 端口")
 
-    expires_at = datetime.utcnow() + timedelta(days=req.lease_days)
+    expires_at = datetime.now() + timedelta(days=req.lease_days)
     prefix = "labcpu" if req.cpu_only else "labgpu"
-    container_name = f"{prefix}-{user.username}-{datetime.utcnow().strftime('%Y%m%d%H%M')}"
+    container_name = f"{prefix}-{user.username}-{datetime.now().strftime('%Y%m%d%H%M')}"
 
     try:
         container_id, ssh_password, extra_ports = create_container(
@@ -164,9 +164,9 @@ def delete_container(container_id: int, user=Depends(get_current_user), db=Depen
 
     # 标记为已移除，不再从数据库彻底删除，以便保留排名统计数据
     c.status = "removed"
-    c.stopped_at = datetime.utcnow()
+    c.stopped_at = datetime.now()
     # 为避免同名冲突，给旧名称加个时间戳后缀
-    c.name = f"{c.name}-del-{int(datetime.utcnow().timestamp())}"
+    c.name = f"{c.name}-del-{int(datetime.now().timestamp())}"
     # 清空 container_id 避免后续可能的唯一性冲突
     c.container_id = None
     

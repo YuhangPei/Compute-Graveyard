@@ -18,7 +18,7 @@ class UserModel(Base):
     contact_value = Column(String(64), default="")  # 手机号或微信号
     approved = Column(Integer, default=0)  # 0 待审批 1 已通过，admin 默认 1
     role = Column(String(16), default="user")  # user | admin
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
     containers = relationship("ContainerModel", back_populates="owner")
 
 
@@ -36,7 +36,7 @@ class ContainerModel(Base):
     status = Column(String(16), default="running")  # running | stopped | removed
     expires_at = Column(DateTime, nullable=False)
     stopped_at = Column(DateTime)  # 停止时间，用于 24h 后清理
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
     owner = relationship("UserModel", back_populates="containers")
     lease_records = relationship("LeaseRecordModel", back_populates="container")
 
@@ -48,5 +48,5 @@ class LeaseRecordModel(Base):
     container_id = Column(Integer, ForeignKey("containers.id"), nullable=False)
     action = Column(String(16), nullable=False)  # create | renew
     expires_at = Column(DateTime, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
     container = relationship("ContainerModel", back_populates="lease_records")

@@ -118,7 +118,7 @@ def force_stop(container_id: int, admin=Depends(get_current_admin), db=Depends(g
     if c.container_id and stop_container(c.container_id):
         c.status = "stopped"
         from datetime import datetime
-        c.stopped_at = datetime.utcnow()
+        c.stopped_at = datetime.now()
         db.commit()
         return {"message": "已强制停止"}
     raise HTTPException(status_code=500, detail="停止失败")
@@ -137,7 +137,7 @@ def force_remove(container_id: int, admin=Depends(get_current_admin), db=Depends
             pass
     
     from datetime import datetime
-    now = datetime.utcnow()
+    now = datetime.now()
     c.status = "removed"
     # 如果之前没停过，记录当前时间为停止时间
     if not c.stopped_at:

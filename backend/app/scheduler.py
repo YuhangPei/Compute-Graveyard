@@ -34,7 +34,7 @@ def _check_expiry_and_notify():
     """检查即将到期的容器，发送 12h/2h 提醒"""
     db = SessionLocal()
     try:
-        now = datetime.utcnow()
+        now = datetime.now()
         for c in db.query(ContainerModel).filter(ContainerModel.status == "running").all():
             if not c.expires_at:
                 continue
@@ -57,7 +57,7 @@ def _stop_expired_containers():
     """到期停用：docker stop"""
     db = SessionLocal()
     try:
-        now = datetime.utcnow()
+        now = datetime.now()
         for c in db.query(ContainerModel).filter(ContainerModel.status == "running").all():
             if c.expires_at and c.expires_at <= now and c.container_id:
                 if stop_container(c.container_id):
@@ -75,7 +75,7 @@ def _remove_stopped_containers():
     """停止 24 小时后清理：docker rm（不删用户目录）"""
     db = SessionLocal()
     try:
-        now = datetime.utcnow()
+        now = datetime.now()
         threshold = now - timedelta(hours=24)
         for c in db.query(ContainerModel).filter(ContainerModel.status == "stopped").all():
             if c.stopped_at and c.stopped_at <= threshold and c.container_id:

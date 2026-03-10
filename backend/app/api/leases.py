@@ -25,7 +25,7 @@ def renew_lease(container_id: int, req: LeaseRenewRequest, user=Depends(get_curr
     if c.status != "running":
         raise HTTPException(status_code=400, detail="仅运行中的容器可续租")
 
-    now = datetime.utcnow()
+    now = datetime.now()
     if now >= c.expires_at:
         raise HTTPException(status_code=400, detail="已过期，无法续租")
     # 到期前 24 小时内可续租
