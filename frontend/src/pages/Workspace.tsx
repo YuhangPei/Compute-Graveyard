@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import Editor from "@monaco-editor/react";
+import Editor, { loader } from "@monaco-editor/react";
 import { fetcher, fetcherText } from "../api/client";
 import "./Workspace.css";
+
+// 预加载 Monaco 编辑器以减少首次打开等待时间
+loader.init();
 
 function getLanguage(path: string): string {
   const ext = path.split(".").pop()?.toLowerCase() ?? "";
@@ -277,18 +280,19 @@ export default function Workspace() {
             </div>
             <div className="modal-body modal-body-editor">
               <Editor
-                height="360px"
+                height="60vh"
                 language={editPath ? getLanguage(editPath) : "plaintext"}
                 value={editContent}
                 onChange={(v) => setEditContent(v ?? "")}
                 theme="vs-dark"
                 options={{
-                  minimap: { enabled: false },
-                  fontSize: 13,
+                  minimap: { enabled: true }, // 既然窗口大了，可以开启小地图
+                  fontSize: 14, // 稍微调大字体
                   scrollBeyondLastLine: false,
                   wordWrap: "on",
+                  automaticLayout: true, // 解决窗口缩放导致编辑器布局错误的问题
                 }}
-                loading={null}
+                loading={<div className="editor-loading">正在下载/加载编辑器模块...</div>}
               />
             </div>
             <div className="modal-actions">

@@ -194,7 +194,19 @@
 }
 
 .modal-editor {
-  max-width: 720px;
+  max-width: 1000px;
+  width: 90%;
+}
+
+.editor-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #34d399;
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  background: #1e1e1e;
 }
 
 .modal-editor .modal-body {
