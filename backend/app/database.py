@@ -97,8 +97,8 @@ def create_default_admin():
     db = SessionLocal()
     try:
         admin = db.query(UserModel).filter(UserModel.username == "admin").first()
-        correct_hash = get_password_hash("admin123")
         if not admin:
+            correct_hash = get_password_hash("admin123")
             admin = UserModel(
                 username="admin",
                 hashed_password=correct_hash,
@@ -107,10 +107,6 @@ def create_default_admin():
                 approved=1,
             )
             db.add(admin)
-            db.commit()
-        elif not verify_password("admin123", admin.hashed_password):
-            # 修复：旧数据中 admin 密码错误时重置
-            admin.hashed_password = correct_hash
             db.commit()
     except Exception as e:
         db.rollback()

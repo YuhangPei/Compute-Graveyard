@@ -136,10 +136,7 @@ export default function Workspace() {
     }
   };
 
-  const copyPath = (path: string) => {
-    navigator.clipboard.writeText(path);
-    // 可加 toast
-  };
+
 
   const handleOpenVSCode = async (path: string) => {
     try {
@@ -234,7 +231,7 @@ export default function Workspace() {
                       {item.is_dir && (
                         <button type="button" className="btn btn-frosted btn-sm" onClick={() => handleOpenVSCode(item.path)}>VS Code</button>
                       )}
-                      <button type="button" className="btn btn-frosted btn-sm" onClick={() => copyPath(item.path)}>复制路径</button>
+
                       <button type="button" className="btn btn-frosted btn-sm btn-danger" onClick={() => setDeletePath(item.path)}>删除</button>
                     </td>
                   </tr>
