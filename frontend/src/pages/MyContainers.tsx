@@ -153,14 +153,20 @@ export default function MyContainers() {
                   </td>
                   <td className="col-actions">
                     {c.status === "running" && c.extra_ports?.["8080"] && (
-                      <a
-                        href={`${window.location.protocol}//${window.location.hostname}:${c.extra_ports["8080"]}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
                         className="btn btn-frosted btn-sm"
+                        onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
+                          if (c.ssh_password) {
+                            await copyAndFeedback(c.ssh_password, e.currentTarget);
+                            alert(`密码 "${c.ssh_password}" 已复制，请在 VS Code 登录时使用`);
+                          }
+                          const url = `${window.location.protocol}//${window.location.hostname}:${c.extra_ports!["8080"]}`;
+                          window.open(url, "_blank");
+                        }}
                       >
                         打开 Code
-                      </a>
+                      </button>
                     )}
                     {c.status === "running" && (
                       <button

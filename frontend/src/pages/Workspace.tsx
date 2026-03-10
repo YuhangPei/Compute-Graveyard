@@ -21,6 +21,14 @@ interface WorkspaceItem {
   size: number | null;
 }
 
+interface Container {
+  id: number;
+  name: string;
+  status: string;
+  ssh_password?: string | null;
+  extra_ports?: Record<string, number> | null;
+}
+
 export default function Workspace() {
   const [currentPath, setCurrentPath] = useState("");
   const [items, setItems] = useState<WorkspaceItem[]>([]);
@@ -32,6 +40,10 @@ export default function Workspace() {
   const [createType, setCreateType] = useState<"file" | "dir" | null>(null);
   const [createName, setCreateName] = useState("");
   const [deletePath, setDeletePath] = useState<string | null>(null);
+
+  const [containers, setContainers] = useState<Container[]>([]);
+  const [showContainerModal, setShowContainerModal] = useState(false);
+  const [pendingVSCodePath, setPendingVSCodePath] = useState("");
 
   const loadList = useCallback(async () => {
     setLoading(true);
@@ -126,6 +138,45 @@ export default function Workspace() {
     // 可加 toast
   };
 
+  const handleOpenVSCode = async (path: string) => {
+    try {
+      const data = await fetcher<Container[]>("/containers/my");
+      const running = data.filter(c => c.status === "running" && c.extra_ports?.["8080"]);
+      if (running.length === 0) {
+        alert("没有正在运行的容器（需包含 Code Server）。请先到资源看板申请容器。");
+        return;
+      }
+      if (running.length === 1) {
+        openVSCodeWithContainer(running[0], path);
+      } else {
+        setContainers(running);
+        setPendingVSCodePath(path);
+        setShowContainerModal(true);
+      }
+    } catch (e) {
+      alert("获取容器列表失败");
+    }
+  };
+
+  const openVSCodeWithContainer = async (container: Container, path: string) => {
+    const port = container.extra_ports?.["8080"];
+    if (!port) return;
+
+    if (container.ssh_password) {
+      try {
+        await navigator.clipboard.writeText(container.ssh_password);
+        alert(`密码 "${container.ssh_password}" 已复制，请在 VS Code 登录时使用`);
+      } catch (err) {
+        console.error("复制失败:", err);
+      }
+    }
+
+    const folder = `/workspace/${path.replace(/\/+$/, "")}`;
+    const url = `${window.location.protocol}//${window.location.hostname}:${port}/?folder=${encodeURIComponent(folder)}`;
+    window.open(url, "_blank");
+    setShowContainerModal(false);
+  };
+
   return (
     <div className="workspace-page workspace-twin">
       <div className="workspace-bg" aria-hidden />
@@ -133,6 +184,7 @@ export default function Workspace() {
       <div className="workspace-header">
         <h1>工作区文件</h1>
         <div className="workspace-toolbar">
+          <button type="button" className="btn btn-frosted btn-sm" onClick={() => handleOpenVSCode(currentPath)}>在 VS Code 中打开</button>
           <button type="button" className="btn btn-frosted btn-sm" onClick={() => { setCreateType("file"); setCreateName(""); }}>新建文件</button>
           <button type="button" className="btn btn-frosted btn-sm" onClick={() => { setCreateType("dir"); setCreateName(""); }}>新建文件夹</button>
         </div>
@@ -166,7 +218,7 @@ export default function Workspace() {
               {items.length === 0 ? (
                 <tr><td colSpan={4} className="workspace-empty">当前目录为空</td></tr>
               ) : (
-                items.map((item) => (
+                items.map((item: WorkspaceItem) => (
                   <tr key={item.path}>
                     <td>
                       <button type="button" className="row-name-btn" onClick={() => handleOpen(item)}>
@@ -176,6 +228,9 @@ export default function Workspace() {
                     <td>{item.is_dir ? "目录" : "文件"}</td>
                     <td className="col-mono">{item.size != null ? `${(item.size / 1024).toFixed(1)} KB` : "-"}</td>
                     <td className="col-actions">
+                      {item.is_dir && (
+                        <button type="button" className="btn btn-frosted btn-sm" onClick={() => handleOpenVSCode(item.path)}>VS Code</button>
+                      )}
                       <button type="button" className="btn btn-frosted btn-sm" onClick={() => copyPath(item.path)}>复制路径</button>
                       <button type="button" className="btn btn-frosted btn-sm btn-danger" onClick={() => setDeletePath(item.path)}>删除</button>
                     </td>
@@ -257,6 +312,43 @@ export default function Workspace() {
             <div className="modal-actions">
               <button type="button" className="btn btn-frosted" onClick={() => setDeletePath(null)}>取消</button>
               <button type="button" className="btn btn-frosted btn-danger" onClick={handleDelete}>删除</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showContainerModal && (
+        <div className="modal-overlay" onClick={() => setShowContainerModal(false)}>
+          <div className="modal modal-sm" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>选择容器</h2>
+              <button type="button" className="btn btn-ghost" onClick={() => setShowContainerModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <p style={{ marginBottom: '1rem', opacity: 0.8 }}>请选择用于打开该文件夹的容器：</p>
+              <div className="container-select-list">
+                {containers.map((c: Container) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className="btn btn-frosted btn-block"
+                    style={{
+                      marginBottom: '0.65rem',
+                      textAlign: 'left',
+                      display: 'block',
+                      width: '100%',
+                      padding: '0.75rem 1rem'
+                    }}
+                    onClick={() => openVSCodeWithContainer(c, pendingVSCodePath)}
+                  >
+                    <span style={{ fontSize: '1.1rem', marginRight: '0.5rem' }}>🚀</span>
+                    <strong>{c.name}</strong>
+                    <span style={{ marginLeft: 'auto', opacity: 0.6, fontSize: '0.8rem', float: 'right' }}>端口: {c.extra_ports?.["8080"]}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn btn-frosted" onClick={() => setShowContainerModal(false)}>取消</button>
             </div>
           </div>
         </div>
