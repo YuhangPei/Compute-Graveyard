@@ -8,6 +8,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.config import JWT_SECRET
+from app.database import get_db
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24h
@@ -39,8 +40,7 @@ def decode_token(token: str) -> Optional[dict]:
         return None
 
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    from app.database import SessionLocal
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db=Depends(get_db)):
     from app.database_models import UserModel
 
     if not credentials:
@@ -49,14 +49,11 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     if not payload or "sub" not in payload:
         raise HTTPException(status_code=401, detail="无效的认证信息")
     username = payload["sub"]
-    db = SessionLocal()
-    try:
-        user = db.query(UserModel).filter(UserModel.username == username).first()
-        if not user:
-            raise HTTPException(status_code=401, detail="用户不存在")
-        return user
-    finally:
-        db.close()
+    
+    user = db.query(UserModel).filter(UserModel.username == username).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="用户不存在")
+    return user
 
 
 async def get_current_admin(user=Depends(get_current_user)):

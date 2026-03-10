@@ -77,6 +77,28 @@ export default function Layout() {
         </nav>
 
         <div className="sidebar-footer">
+          <a
+            href="https://github.com/YuhangPei/Compute-Graveyard"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sidebar-github-link"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "0.5rem 0.75rem",
+              color: "rgba(255, 255, 255, 0.7)",
+              textDecoration: "none",
+              fontSize: "0.85rem",
+              transition: "color 0.2s",
+              marginBottom: "0.25rem"
+            }}
+            onMouseEnter={(e: any) => e.currentTarget.style.color = "#fff"}
+            onMouseLeave={(e: any) => e.currentTarget.style.color = "rgba(255, 255, 255, 0.7)"}
+          >
+            <img src="/github_icon.svg" alt="GitHub" style={{ width: "18px", height: "18px" }} />
+            <span>GitHub 源码</span>
+          </a>
           <button
             className="sidebar-btn-ins"
             onClick={() => setShowInstructions(true)}
@@ -119,6 +141,16 @@ export default function Layout() {
             </Link>
           ))}
         </nav>
+        <a
+          href="https://github.com/YuhangPei/Compute-Graveyard"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-ghost"
+          style={{ padding: "0.35rem", display: "flex", alignItems: "center", marginRight: "0.5rem" }}
+          title="GitHub 源码"
+        >
+          <img src="/github_icon.svg" alt="GitHub" style={{ width: "20px", height: "20px" }} />
+        </a>
         <button
           className="btn btn-ghost"
           style={{ padding: "0.35rem 0.6rem", fontSize: "0.85rem", marginRight: "1rem" }}

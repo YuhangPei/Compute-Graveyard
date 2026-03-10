@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.database import get_db
 from app.database_models import UserModel
-from app.models import UserResponse, Token, UserRegister, UserProfileUpdate
+from app.models import UserResponse, Token, UserRegister, UserProfileUpdate, UserPasswordChange
 from app.auth import verify_password, create_access_token, get_current_user, get_password_hash
 
 router = APIRouter()
@@ -146,3 +146,15 @@ def update_me(req: UserProfileUpdate, user=Depends(get_current_user), db=Depends
         approved=bool(getattr(user, "approved", 1)),
         created_at=user.created_at,
     )
+
+
+@router.post("/password")
+def change_password(req: UserPasswordChange, user=Depends(get_current_user), db=Depends(get_db)):
+    """修改密码"""
+    if not verify_password(req.old_password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="原密码不正确")
+    if len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="新密码长度至少为 6 位")
+    user.hashed_password = get_password_hash(req.new_password)
+    db.commit()
+    return {"message": "密码修改成功"}

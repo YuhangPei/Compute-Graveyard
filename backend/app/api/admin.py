@@ -130,12 +130,23 @@ def force_remove(container_id: int, admin=Depends(get_current_admin), db=Depends
     if not c:
         raise HTTPException(status_code=404, detail="容器不存在")
     if c.container_id:
-        stop_container(c.container_id)
-        remove_container(c.container_id)
+        try:
+            stop_container(c.container_id)
+            remove_container(c.container_id)
+        except:
+            pass
+    
+    from datetime import datetime
+    now = datetime.utcnow()
     c.status = "removed"
+    # 如果之前没停过，记录当前时间为停止时间
+    if not c.stopped_at:
+        c.stopped_at = now
+    # 为避免重名冲突，给旧名称加个时间戳后缀
+    c.name = f"{c.name}-del-{int(now.timestamp())}"
     c.container_id = None
     db.commit()
-    return {"message": "已清理容器"}
+    return {"message": "已成功强制清理容器并存档记录"}
 
 
 @router.get("/containers", response_model=list)

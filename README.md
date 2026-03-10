@@ -16,6 +16,11 @@
 - **容器镜像**：基于 NVIDIA CUDA + Miniconda，预装 code-server（与 SSH 同密码）、SSH，个人目录挂载至 `/workspace`
 
 ---
+## TODO List
+- 🔲 用户的个人 webhook 通知
+- 🔲 多集群/服务器支持
+- 🔲 参数管理员可配置
+
 
 ## 技术栈
 

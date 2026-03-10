@@ -30,6 +30,12 @@ class UserProfileUpdate(BaseModel):
     contact_value: Optional[str] = None
 
 
+class UserPasswordChange(BaseModel):
+    """用户修改密码"""
+    old_password: str
+    new_password: str
+
+
 class UserResponse(UserBase):
     id: int
     role: str
