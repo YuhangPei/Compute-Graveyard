@@ -98,6 +98,7 @@ def create_container(
     username: str,
     gpu_ids: List[int],
     ssh_port: int,
+    mem_limit_gb: int = 8,
 ) -> tuple[Optional[str], str, Dict[int, int]]:
     """
     创建容器（GPU 或纯 CPU），随机 SSH 密码，常用端口随机映射。
@@ -144,6 +145,8 @@ def create_container(
             ports=ports_map,
             volumes=volumes,
             environment={"SSH_PASSWORD": ssh_password, "TZ": "Asia/Shanghai"},
+            mem_limit=f"{mem_limit_gb}g",
+            shm_size="32g",
         )
         cid = container.id if hasattr(container, "id") else str(container) if container else None
         return (cid, ssh_password, extra_ports_map)

@@ -34,6 +34,7 @@ def init_db():
     _migrate_gpu_ids_nullable()
     _migrate_user_approval()
     _migrate_container_timestamps()
+    _migrate_system_settings()
 
 
 def _migrate_add_ssh_password():
@@ -81,6 +82,37 @@ def _migrate_container_timestamps():
                 conn.commit()
         except Exception:
             pass
+
+
+def _migrate_system_settings():
+    """确保 system_settings 表存在（Base.metadata.create_all 应已创建，这里作保险）"""
+    pass
+
+
+def get_setting(key: str, default: str = "") -> str:
+    """读取系统配置，不存在则返回 default"""
+    db = SessionLocal()
+    try:
+        from app.database_models import SystemSettings
+        row = db.query(SystemSettings).filter(SystemSettings.key == key).first()
+        return row.value if row else default
+    finally:
+        db.close()
+
+
+def set_setting(key: str, value: str) -> None:
+    """写入系统配置"""
+    db = SessionLocal()
+    try:
+        from app.database_models import SystemSettings
+        row = db.query(SystemSettings).filter(SystemSettings.key == key).first()
+        if row:
+            row.value = value
+        else:
+            db.add(SystemSettings(key=key, value=value))
+        db.commit()
+    finally:
+        db.close()
 
 
 def get_db():

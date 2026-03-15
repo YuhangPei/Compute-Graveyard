@@ -35,13 +35,92 @@ interface Container {
   owner_username: string;
 }
 
+interface SystemSettings {
+  cpu_mem_gb: number;
+  gpu_mem_gb_per_gpu: number;
+}
+
+// ---- 通知组件 ----
+type ToastType = "success" | "error" | "info";
+interface ToastMsg { id: number; msg: string; type: ToastType; }
+
+let _toastId = 0;
+
+function Toast({ toasts, remove }: { toasts: ToastMsg[]; remove: (id: number) => void }) {
+  return (
+    <div className="toast-container">
+      {toasts.map(t => (
+        <div key={t.id} className={`toast toast-${t.type}`}>
+          <span>{t.type === "success" ? "✓" : t.type === "error" ? "✕" : "ℹ"}</span>
+          <span>{t.msg}</span>
+          <button type="button" onClick={() => remove(t.id)}>×</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---- 确认对话框 ----
+interface ConfirmState {
+  visible: boolean;
+  message: string;
+  onConfirm: () => void;
+}
+
+function ConfirmDialog({ state, onCancel }: { state: ConfirmState; onCancel: () => void }) {
+  if (!state.visible) return null;
+  return (
+    <div className="modal-overlay" onClick={onCancel}>
+      <div className="modal modal-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>确认操作</h2>
+          <button type="button" className="btn btn-ghost" onClick={onCancel}>×</button>
+        </div>
+        <div className="modal-body">
+          <p style={{ lineHeight: 1.6 }}>{state.message}</p>
+        </div>
+        <div className="modal-actions">
+          <button type="button" className="btn btn-frosted" onClick={onCancel}>取消</button>
+          <button
+            type="button"
+            className="btn btn-frosted btn-danger"
+            onClick={() => { state.onConfirm(); onCancel(); }}
+          >
+            确认
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Admin() {
   const [users, setUsers] = useState<User[]>([]);
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
   const [containers, setContainers] = useState<Container[]>([]);
   const [newUser, setNewUser] = useState({ username: "", password: "", display_name: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [createError, setCreateError] = useState("");
+
+  // 资源配额
+  const [settings, setSettings] = useState<SystemSettings>({ cpu_mem_gb: 8, gpu_mem_gb_per_gpu: 32 });
+  const [settingsDraft, setSettingsDraft] = useState<SystemSettings>({ cpu_mem_gb: 8, gpu_mem_gb_per_gpu: 32 });
+  const [settingsSaving, setSettingsSaving] = useState(false);
+
+  // toast 通知
+  const [toasts, setToasts] = useState<ToastMsg[]>([]);
+  const pushToast = (msg: string, type: ToastType = "info") => {
+    const id = ++_toastId;
+    setToasts(prev => [...prev, { id, msg, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3500);
+  };
+  const removeToast = (id: number) => setToasts(prev => prev.filter(t => t.id !== id));
+
+  // 确认对话框
+  const [confirm, setConfirm] = useState<ConfirmState>({ visible: false, message: "", onConfirm: () => { } });
+  const askConfirm = (message: string, onConfirm: () => void) =>
+    setConfirm({ visible: true, message, onConfirm });
+  const closeConfirm = () => setConfirm(s => ({ ...s, visible: false }));
 
   const loadUsers = async () => {
     const data = await fetcher<User[]>("/admin/users");
@@ -58,10 +137,21 @@ export default function Admin() {
     setContainers(data);
   };
 
+  const loadSettings = async () => {
+    try {
+      const data = await fetcher<SystemSettings>("/admin/settings");
+      setSettings(data);
+      setSettingsDraft(data);
+    } catch {
+      // 忽略
+    }
+  };
+
   useEffect(() => {
     loadUsers();
     loadPendingUsers();
     loadContainers();
+    loadSettings();
   }, []);
 
   const handleApprove = async (userId: number) => {
@@ -69,15 +159,16 @@ export default function Admin() {
       await fetcher(`/admin/users/${userId}/approve`, { method: "POST" });
       await loadUsers();
       await loadPendingUsers();
+      pushToast("已通过审批", "success");
     } catch (e) {
-      alert(e instanceof Error ? e.message : "操作失败");
+      pushToast(e instanceof Error ? e.message : "操作失败", "error");
     }
   };
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setCreateError("");
     try {
       await fetcher("/admin/users", {
         method: "POST",
@@ -85,48 +176,139 @@ export default function Admin() {
       });
       setNewUser({ username: "", password: "", display_name: "" });
       await loadUsers();
+      pushToast(`用户 "${newUser.username}" 创建成功`, "success");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "创建失败");
+      setCreateError(e instanceof Error ? e.message : "创建失败");
     } finally {
       setLoading(false);
     }
   };
 
-  const forceStop = async (id: number) => {
-    if (!confirm("确定要强制停止该容器吗？")) return;
-    try {
-      await fetcher(`/admin/containers/${id}/force-stop`, { method: "POST" });
-      await loadContainers();
-    } catch (e) {
-      alert(e instanceof Error ? e.message : "操作失败");
-    }
+  const forceStop = (id: number) => {
+    askConfirm("确定要强制停止该容器吗？", async () => {
+      try {
+        await fetcher(`/admin/containers/${id}/force-stop`, { method: "POST" });
+        await loadContainers();
+        pushToast("已强制停止容器", "success");
+      } catch (e) {
+        pushToast(e instanceof Error ? e.message : "操作失败", "error");
+      }
+    });
   };
 
-  const forceRemove = async (id: number) => {
-    if (!confirm("确定要清理该容器吗？个人目录会保留。")) return;
-    try {
-      await fetcher(`/admin/containers/${id}/force-remove`, { method: "POST" });
-      await loadContainers();
-    } catch (e) {
-      alert(e instanceof Error ? e.message : "操作失败");
-    }
+  const forceRemove = (id: number) => {
+    askConfirm("确定要清理该容器吗？个人目录会保留。", async () => {
+      try {
+        await fetcher(`/admin/containers/${id}/force-remove`, { method: "POST" });
+        await loadContainers();
+        pushToast("容器已清理", "success");
+      } catch (e) {
+        pushToast(e instanceof Error ? e.message : "操作失败", "error");
+      }
+    });
   };
 
-  const handleDeleteUser = async (id: number, username: string) => {
-    if (!confirm(`确定要彻底删除用户 "${username}" 吗？该用户的所有容器也会被销毁！`)) return;
+  const handleDeleteUser = (id: number, username: string) => {
+    askConfirm(`确定要彻底删除用户 "${username}" 吗？该用户的所有容器也会被销毁！`, async () => {
+      try {
+        await fetcher(`/admin/users/${id}`, { method: "DELETE" });
+        await loadUsers();
+        await loadContainers();
+        pushToast(`用户 "${username}" 已删除`, "success");
+      } catch (e) {
+        pushToast(e instanceof Error ? e.message : "删除失败", "error");
+      }
+    });
+  };
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSettingsSaving(true);
     try {
-      await fetcher(`/admin/users/${id}`, { method: "DELETE" });
-      await loadUsers();
-      await loadContainers(); // 用户被删，容器也会被删
+      await fetcher("/admin/settings", {
+        method: "PUT",
+        body: JSON.stringify(settingsDraft),
+      });
+      setSettings(settingsDraft);
+      pushToast("资源配额已保存", "success");
     } catch (e) {
-      alert(e instanceof Error ? e.message : "删除失败");
+      pushToast(e instanceof Error ? e.message : "保存失败", "error");
+    } finally {
+      setSettingsSaving(false);
     }
   };
 
   return (
     <div className="admin-page">
+      <Toast toasts={toasts} remove={removeToast} />
+      <ConfirmDialog state={confirm} onCancel={closeConfirm} />
       <h1>管理后台</h1>
 
+      {/* 资源配额设置 */}
+      <section className="admin-section">
+        <h2>资源配额设置</h2>
+        <form onSubmit={handleSaveSettings} className="admin-settings-grid">
+          <div className="setting-item">
+            <label>
+              <strong>CPU 容器内存配额</strong>
+              <span className="setting-desc">每个纯 CPU 容器可使用的最大内存</span>
+            </label>
+            <div className="setting-input-wrap">
+              <input
+                type="number"
+                min={1}
+                max={512}
+                value={settingsDraft.cpu_mem_gb}
+                onChange={(e) => setSettingsDraft(s => ({ ...s, cpu_mem_gb: Number(e.target.value) }))}
+              />
+              <span>GB</span>
+            </div>
+          </div>
+          <div className="setting-item">
+            <label>
+              <strong>GPU 容器每卡内存配额</strong>
+              <span className="setting-desc">每选 1 张 GPU 分配的内存量（总量 = 张数 × 此值）</span>
+            </label>
+            <div className="setting-input-wrap">
+              <input
+                type="number"
+                min={1}
+                max={512}
+                value={settingsDraft.gpu_mem_gb_per_gpu}
+                onChange={(e) => setSettingsDraft(s => ({ ...s, gpu_mem_gb_per_gpu: Number(e.target.value) }))}
+              />
+              <span>GB / 卡</span>
+            </div>
+          </div>
+          <div className="setting-item setting-item-preview">
+            <label>
+              <strong>示例预览</strong>
+              <span className="setting-desc">当前配置下申请场景的内存分配</span>
+            </label>
+            <div className="setting-preview">
+              <div>纯 CPU 容器 → <b>{settingsDraft.cpu_mem_gb} GB</b></div>
+              <div>选 1 张 GPU → <b>{settingsDraft.gpu_mem_gb_per_gpu} GB</b></div>
+              <div>选 2 张 GPU → <b>{settingsDraft.gpu_mem_gb_per_gpu * 2} GB</b></div>
+              <div>选 4 张 GPU → <b>{settingsDraft.gpu_mem_gb_per_gpu * 4} GB</b></div>
+            </div>
+          </div>
+          <div className="setting-item setting-item-action">
+            <button type="submit" className="btn btn-primary" disabled={settingsSaving}>
+              {settingsSaving ? "保存中…" : "保存配置"}
+            </button>
+            <button
+              type="button"
+              className="btn btn-frosted"
+              onClick={() => setSettingsDraft(settings)}
+              disabled={settingsSaving}
+            >
+              重置
+            </button>
+          </div>
+        </form>
+      </section>
+
+      {/* 创建用户 */}
       <section className="admin-section">
         <h2>创建用户</h2>
         <form onSubmit={handleCreateUser} className="admin-form">
@@ -152,9 +334,10 @@ export default function Admin() {
             {loading ? "创建中..." : "创建"}
           </button>
         </form>
-        {error && <div className="form-error">{error}</div>}
+        {createError && <div className="form-error">{createError}</div>}
       </section>
 
+      {/* 待审批用户 */}
       <section className="admin-section">
         <h2>待审批用户</h2>
         {pendingUsers.length === 0 ? (
@@ -187,6 +370,7 @@ export default function Admin() {
         )}
       </section>
 
+      {/* 用户列表 */}
       <section className="admin-section">
         <h2>用户列表</h2>
         <table className="admin-table">
@@ -227,6 +411,7 @@ export default function Admin() {
         </table>
       </section>
 
+      {/* 所有容器 */}
       <section className="admin-section">
         <h2>全部容器</h2>
         <table className="admin-table">
@@ -247,7 +432,7 @@ export default function Admin() {
             {containers.map((c) => (
               <tr key={c.id}>
                 <td>{c.name}</td>
-                <td>{c.gpu_ids}</td>
+                <td>{c.gpu_ids || "CPU"}</td>
                 <td>{c.ssh_port}</td>
                 <td>
                   {c.extra_ports

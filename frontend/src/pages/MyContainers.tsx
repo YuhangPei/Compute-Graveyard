@@ -4,6 +4,50 @@ import "./MyContainers.css";
 
 const PORT_LABELS: Record<string, string> = { 8888: "Jupyter", 6006: "TensorBoard", 8080: "Code Server" };
 
+type ToastType = "success" | "error" | "info";
+interface ToastMsg { id: number; msg: string; type: ToastType; }
+let _tid = 0;
+
+function Toast({ toasts, remove }: { toasts: ToastMsg[]; remove: (id: number) => void }) {
+  return (
+    <div className="toast-container">
+      {toasts.map(t => (
+        <div key={t.id} className={`toast toast-${t.type}`}>
+          <span>{t.type === "success" ? "✓" : t.type === "error" ? "✕" : "ℹ"}</span>
+          <span>{t.msg}</span>
+          <button type="button" onClick={() => remove(t.id)}>×</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+interface ConfirmState { visible: boolean; message: string; onConfirm: () => void; }
+function ConfirmDialog({ state, onCancel }: { state: ConfirmState; onCancel: () => void }) {
+  if (!state.visible) return null;
+  return (
+    <div className="modal-overlay" onClick={onCancel}>
+      <div className="modal modal-sm" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>确认操作</h2>
+          <button type="button" className="btn btn-ghost" onClick={onCancel}>×</button>
+        </div>
+        <div className="modal-body">
+          <p style={{ lineHeight: 1.6 }}>{state.message}</p>
+        </div>
+        <div className="modal-actions">
+          <button type="button" className="btn btn-frosted" onClick={onCancel}>取消</button>
+          <button
+            type="button"
+            className="btn btn-frosted btn-danger"
+            onClick={() => { state.onConfirm(); onCancel(); }}
+          >确认</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface Container {
   id: number;
   name: string;
@@ -53,6 +97,19 @@ export default function MyContainers() {
   const [error, setError] = useState("");
   const [renewing, setRenewing] = useState<number | null>(null);
 
+  const [toasts, setToasts] = useState<ToastMsg[]>([]);
+  const pushToast = (msg: string, type: ToastType = "info") => {
+    const id = ++_tid;
+    setToasts(prev => [...prev, { id, msg, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3500);
+  };
+  const removeToast = (id: number) => setToasts(prev => prev.filter(t => t.id !== id));
+
+  const [confirm, setConfirm] = useState<ConfirmState>({ visible: false, message: "", onConfirm: () => { } });
+  const askConfirm = (message: string, onConfirm: () => void) =>
+    setConfirm({ visible: true, message, onConfirm });
+  const closeConfirm = () => setConfirm(s => ({ ...s, visible: false }));
+
   const load = async () => {
     try {
       const data = await fetcher<Container[]>("/containers/my");
@@ -78,21 +135,27 @@ export default function MyContainers() {
     try {
       await fetcher(`/leases/renew/${id}`, { method: "POST", body: JSON.stringify({ lease_days: 3 }) });
       await load();
+      pushToast("续租成功！已延长 3 天", "success");
     } catch (e) {
-      alert(e instanceof Error ? e.message : "续租失败");
+      pushToast(e instanceof Error ? e.message : "续租失败", "error");
     } finally {
       setRenewing(null);
     }
   };
 
-  const handleDelete = async (id: number, name: string) => {
-    if (!window.confirm(`确定要提前停止并销毁容器 "${name}" 吗？此操作不可逆，容器内未保存到 /workspace 的数据将丢失！`)) return;
-    try {
-      await fetcher(`/containers/${id}`, { method: "DELETE" });
-      await load();
-    } catch (e) {
-      alert(e instanceof Error ? e.message : "销毁失败");
-    }
+  const handleDelete = (id: number, name: string) => {
+    askConfirm(
+      `确定要提前停止并销毁容器 "${name}" 吗？此操作不可逆，容器内未保存到 /workspace 的数据将丢失！`,
+      async () => {
+        try {
+          await fetcher(`/containers/${id}`, { method: "DELETE" });
+          await load();
+          pushToast("容器已销毁", "success");
+        } catch (e) {
+          pushToast(e instanceof Error ? e.message : "销毁失败", "error");
+        }
+      }
+    );
   };
 
   const statusText = (s: string) => (s === "running" ? "运行中" : s === "stopped" ? "已停止" : "已清理");
@@ -102,6 +165,8 @@ export default function MyContainers() {
 
   return (
     <div className="my-containers my-containers-twin">
+      <Toast toasts={toasts} remove={removeToast} />
+      <ConfirmDialog state={confirm} onCancel={closeConfirm} />
       <div className="my-containers-bg" aria-hidden />
       <div className="my-containers-glow" aria-hidden />
       <h1>我的容器</h1>
@@ -159,7 +224,7 @@ export default function MyContainers() {
                         onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                           if (c.ssh_password) {
                             await copyAndFeedback(c.ssh_password, e.currentTarget);
-                            alert(`密码 "${c.ssh_password}" 已复制，请在 VS Code 登录时使用`);
+                            pushToast(`密码 "${c.ssh_password}" 已复制，请在 VS Code 登录时使用`, "info");
                           }
                           const url = `${window.location.protocol}//${window.location.hostname}:${c.extra_ports!["8080"]}`;
                           window.open(url, "_blank");

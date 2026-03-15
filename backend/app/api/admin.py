@@ -1,13 +1,15 @@
 """管理员 API"""
 import json
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 
 from app.auth import get_current_admin
-from app.database import get_db
+from app.database import get_db, get_setting, set_setting
 from app.database_models import UserModel, ContainerModel
 from app.docker_service import stop_container, remove_container
 from app.models import UserCreate, UserResponse
 from app.auth import get_password_hash
+from app.config import DEFAULT_CPU_MEM_GB, DEFAULT_GPU_MEM_GB_PER_GPU
 
 router = APIRouter()
 
@@ -170,3 +172,29 @@ def list_all_containers(admin=Depends(get_current_admin), db=Depends(get_db)):
             "created_at": r.created_at,
         })
     return result
+
+
+# ---- 资源配额设置 ----
+
+@router.get("/settings")
+def get_settings(admin=Depends(get_current_admin)):
+    return {
+        "cpu_mem_gb": int(get_setting("cpu_mem_gb", str(DEFAULT_CPU_MEM_GB))),
+        "gpu_mem_gb_per_gpu": int(get_setting("gpu_mem_gb_per_gpu", str(DEFAULT_GPU_MEM_GB_PER_GPU))),
+    }
+
+
+class SettingsUpdate(BaseModel):
+    cpu_mem_gb: int
+    gpu_mem_gb_per_gpu: int
+
+
+@router.put("/settings")
+def update_settings(req: SettingsUpdate, admin=Depends(get_current_admin)):
+    if req.cpu_mem_gb < 1:
+        raise HTTPException(status_code=400, detail="CPU 内存配额最小 1 GB")
+    if req.gpu_mem_gb_per_gpu < 1:
+        raise HTTPException(status_code=400, detail="单卡 GPU 内存配额最小 1 GB")
+    set_setting("cpu_mem_gb", str(req.cpu_mem_gb))
+    set_setting("gpu_mem_gb_per_gpu", str(req.gpu_mem_gb_per_gpu))
+    return {"message": "配置已保存"}

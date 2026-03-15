@@ -14,7 +14,8 @@ from app.docker_service import (
     get_used_ssh_ports,
 )
 from app.models import ContainerApplyRequest, ContainerResponse
-from app.config import DEFAULT_LEASE_DAYS, MAX_LEASE_DAYS, MAX_GPUS_PER_USER, MAX_CONTAINERS_PER_USER
+from app.config import DEFAULT_LEASE_DAYS, MAX_LEASE_DAYS, MAX_GPUS_PER_USER, MAX_CONTAINERS_PER_USER, DEFAULT_CPU_MEM_GB, DEFAULT_GPU_MEM_GB_PER_GPU
+from app.database import get_setting
 
 router = APIRouter()
 
@@ -71,12 +72,20 @@ def apply_container(req: ContainerApplyRequest, user=Depends(get_current_user), 
     prefix = "labcpu" if req.cpu_only else "labgpu"
     container_name = f"{prefix}-{user.username}-{datetime.now().strftime('%Y%m%d%H%M')}"
 
+    # 读取配额设置
+    if gpu_ids:
+        gpu_mem_gb_per_gpu = int(get_setting("gpu_mem_gb_per_gpu", str(DEFAULT_GPU_MEM_GB_PER_GPU)))
+        mem_limit_gb = gpu_mem_gb_per_gpu * len(gpu_ids)
+    else:
+        mem_limit_gb = int(get_setting("cpu_mem_gb", str(DEFAULT_CPU_MEM_GB)))
+
     try:
         container_id, ssh_password, extra_ports = create_container(
             name=container_name,
             username=user.username,
             gpu_ids=gpu_ids,
             ssh_port=ssh_port,
+            mem_limit_gb=mem_limit_gb,
         )
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

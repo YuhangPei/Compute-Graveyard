@@ -50,3 +50,12 @@ class LeaseRecordModel(Base):
     expires_at = Column(DateTime, nullable=False)
     created_at = Column(DateTime, default=datetime.now)
     container = relationship("ContainerModel", back_populates="lease_records")
+
+
+class SystemSettings(Base):
+    __tablename__ = "system_settings"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    key = Column(String(64), unique=True, nullable=False, index=True)
+    value = Column(String(256), nullable=False)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)

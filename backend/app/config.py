@@ -17,6 +17,9 @@ DEFAULT_LEASE_DAYS = int(os.getenv("DEFAULT_LEASE_DAYS", "3"))
 MAX_LEASE_DAYS = int(os.getenv("MAX_LEASE_DAYS", "7"))
 MAX_GPUS_PER_USER = int(os.getenv("MAX_GPUS_PER_USER", "2"))
 MAX_CONTAINERS_PER_USER = int(os.getenv("MAX_CONTAINERS_PER_USER", "4"))
+# 内存配额默认值（单位 GB），可在管理后台动态覆盖
+DEFAULT_CPU_MEM_GB = int(os.getenv("DEFAULT_CPU_MEM_GB", "8"))
+DEFAULT_GPU_MEM_GB_PER_GPU = int(os.getenv("DEFAULT_GPU_MEM_GB_PER_GPU", "32"))
 JWT_SECRET = os.getenv("JWT_SECRET", "change-this-in-production")
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DATA_DIR / 'lab_gpu.db'}")
 NOTIFY_WEBHOOK = os.getenv("NOTIFY_WEBHOOK", "")  # 钉钉/飞书 Webhook

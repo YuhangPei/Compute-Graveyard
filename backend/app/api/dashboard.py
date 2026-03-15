@@ -33,7 +33,7 @@ def _container_duration_hours(c: ContainerModel, now: datetime) -> float:
 def _compute_ranking(db, since: datetime) -> list:
     """计算自 since 以来各用户累计使用时长排行"""
     containers = db.query(ContainerModel).filter(ContainerModel.created_at >= since).all()
-    now = datetime.utcnow()
+    now = datetime.now()
     user_hours = defaultdict(float)
     user_info = {}
     for c in containers:
@@ -56,7 +56,7 @@ def get_dashboard(db=Depends(get_db), _=Depends(get_current_user)):
     gpus = [GPUInfo(**g) for g in gpu_rows] if gpu_rows else []
     load = get_system_load()
     system_load = SystemLoad(**load)
-    now = datetime.utcnow()
+    now = datetime.now()
 
     occupancies = []
     all_containers = []
